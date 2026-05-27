@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Import Cost & Service Fee Calculator</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      background: #f4f7fb;
+      color: #1f2937;
+      padding: 24px;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: auto;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 28px;
+    }
+
+    .header h1 {
+      font-size: 32px;
+      margin-bottom: 8px;
+      color: #111827;
+    }
+
+    .header p {
+      color: #6b7280;
+      font-size: 16px;
+    }
+
+    .calculator {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+    }
+
+    .card {
+      background: #ffffff;
+      padding: 24px;
+      border-radius: 18px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+    }
+
+    .card h2 {
+      font-size: 22px;
+      margin-bottom: 18px;
+      color: #111827;
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    .section-title {
+      margin: 22px 0 14px;
+      padding-top: 18px;
+      border-top: 1px solid #e5e7eb;
+      font-size: 17px;
+      color: #111827;
+    }
+
+    .helper-text {
+      font-size: 13px;
+      color: #6b7280;
+      margin-top: -8px;
+      margin-bottom: 14px;
+      line-height: 1.4;
+    }
+
+    label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: #374151;
+    }
+
+    input {
+      width: 100%;
+      padding: 14px;
+      border: 1px solid #d1d5db;
+      border-radius: 12px;
+      font-size: 16px;
+      outline: none;
+    }
+
+    input:focus {
+      border-color: #2563eb;
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+    }
+
+    .buttons {
+      display: flex;
+      gap: 12px;
+      margin-top: 20px;
+    }
+
+    button {
+      flex: 1;
+      border: none;
+      padding: 14px;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .calculate-btn {
+      background: #2563eb;
+      color: white;
+    }
+
+    .reset-btn {
+      background: #e5e7eb;
+      color: #111827;
+    }
+
+    .result-box {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 14px 0;
+      border-bottom: 1px solid #e5e7eb;
+      gap: 16px;
+    }
+
+    .result-box span:first-child {
+      color: #6b7280;
+    }
+
+    .result-box span:last-child {
+      font-weight: bold;
+      color: #111827;
+      text-align: right;
+    }
+
+    .unit-price-highlight {
+      margin-top: 18px;
+      padding: 18px;
+      background: #eff6ff;
+      border: 2px solid #2563eb;
+      border-radius: 16px;
+    }
+
+    .unit-price-highlight span:first-child {
+      color: #1d4ed8;
+      font-weight: 700;
+    }
+
+    .unit-price-highlight span:last-child {
+      color: #1d4ed8;
+      font-size: 24px;
+      font-weight: 800;
+    }
+
+    .total {
+      margin-top: 20px;
+      padding: 20px;
+      background: #ecfdf5;
+      border: 1px solid #bbf7d0;
+      border-radius: 16px;
+      text-align: center;
+    }
+
+    .total p {
+      color: #047857;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .total h3 {
+      font-size: 30px;
+      color: #065f46;
+    }
+
+    .payment-section {
+      margin-top: 20px;
+      padding: 22px;
+      background: #eff6ff;
+      border: 2px solid #2563eb;
+      border-radius: 18px;
+      text-align: center;
+    }
+
+    .payment-section p {
+      color: #1d4ed8;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+
+    .payment-section h3 {
+      font-size: 32px;
+      color: #1e40af;
+      margin-bottom: 16px;
+    }
+
+    .pay-btn {
+      width: 100%;
+      background: #2563eb;
+      color: white;
+      padding: 16px;
+      border-radius: 14px;
+      font-size: 17px;
+      font-weight: 700;
+      cursor: pointer;
+      border: none;
+    }
+
+    .payment-note {
+      margin-top: 12px;
+      font-size: 13px;
+      color: #475569;
+      line-height: 1.5;
+    }
+
+    .note {
+      margin-top: 18px;
+      font-size: 14px;
+      color: #6b7280;
+      line-height: 1.5;
+    }
+
+    @media (max-width: 768px) {
+      body {
+        padding: 16px;
+      }
+
+      .calculator {
+        grid-template-columns: 1fr;
+      }
+
+      .header h1 {
+        font-size: 26px;
+      }
+
+      .buttons {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>Import Cost & Service Fee Calculator</h1>
+      <p>Calculate item value, shipping fee, service fee, and total buyer payment.</p>
+    </div>
+
+    <div class="calculator">
+      <div class="card">
+        <h2>Enter Order Details</h2>
+
+        <h3 class="section-title">Item Value Calculator</h3>
+        <p class="helper-text">Enter unit price and quantity to automatically get the order value in USD.</p>
+
+        <div class="form-group">
+          <label for="unitPriceUsd">Unit Price in USD</label>
+          <input type="number" id="unitPriceUsd" placeholder="Example: 12.5" step="0.01" oninput="updateOrderValueUsd(); autoCalculate();" />
+        </div>
+
+        <div class="form-group">
+          <label for="itemQuantity">Quantity</label>
+          <input type="number" id="itemQuantity" placeholder="Example: 20" oninput="handleQuantityChange(); autoCalculate();" />
+        </div>
+
+        <div class="form-group">
+          <label for="orderValueUsd">Order Value in USD</label>
+          <input type="number" id="orderValueUsd" placeholder="Example: 250" step="0.01" oninput="autoCalculate();" />
+        </div>
+
+        <div class="form-group">
+          <label for="usdRate">USD to KSh Rate</label>
+          <input type="number" id="usdRate" placeholder="Example: 130" oninput="autoCalculate();" />
+        </div>
+
+        <h3 class="section-title">CBM Calculator</h3>
+        <p class="helper-text">Enter either CBM per item or total CBM together with quantity. The calculator will automatically compute the missing value.</p>
+
+        <div class="form-group">
+          <label for="cbmPerItem">CBM per Item</label>
+          <input type="number" id="cbmPerItem" placeholder="Example: 0.028" step="0.001" oninput="updateTotalCbm(); autoCalculate();" />
+        </div>
+
+        <div class="form-group">
+          <label for="totalCbm">Total CBM</label>
+          <input type="number" id="totalCbm" placeholder="Example: 0.56" step="0.001" oninput="updateCbmPerItem(); autoCalculate();" />
+        </div>
+
+        <div class="form-group">
+          <label for="shippingPerCbm">Shipping Fee per CBM in KSh</label>
+          <input type="number" id="shippingPerCbm" placeholder="Example: 52000" oninput="autoCalculate();" />
+        </div>
+
+        <div class="form-group">
+          <label for="warehouseDeliveryFee">Factory/Warehouse Delivery Fee (USD)</label>
+          <input type="number" id="warehouseDeliveryFee" placeholder="Example: 25" step="0.01" oninput="autoCalculate();" />
+        </div>
+
+        <div class="buttons">
+          <button class="calculate-btn" onclick="calculateImportCost()">Calculate</button>
+          <button class="reset-btn" onclick="resetCalculator()">Reset</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Calculation Results</h2>
+
+        <div class="result-box">
+          <span>Item Value in KSh</span>
+          <span id="itemValueResult">KSh 0</span>
+        </div>
+
+        <div class="result-box">
+          <span>Shipping Fee</span>
+          <span id="shippingFeeResult">KSh 0</span>
+        </div>
+
+        <div class="result-box">
+          <span>Factory/Warehouse Delivery Fee</span>
+          <span id="warehouseDeliveryFeeResult">KSh 0</span>
+        </div>
+
+        <div class="result-box">
+          <span>Service Fee Rate Used</span>
+          <span id="commissionRateResult">0%</span>
+        </div>
+
+        <div class="result-box">
+          <span>Service Fee Amount</span>
+          <span id="commissionAmountResult">KSh 0</span>
+        </div>
+
+        <div class="result-box unit-price-highlight">
+          <span>Final Unit Price per Item</span>
+          <span id="finalUnitPriceResult">KSh 0</span>
+        </div>
+
+        <div class="total">
+          <p>Total Amount Buyer Should Pay</p>
+          <h3 id="totalPayableResult">KSh 0</h3>
+        </div>
+
+        <div class="payment-section">
+          <p>Amount Payable Now (Excluding Shipping Fee)</p>
+          <h3 id="amountPayNowResult">KSh 0</h3>
+
+          <button class="pay-btn">
+            Proceed to Payment
+          </button>
+
+          <p class="payment-note">
+            Shipping fee will be paid separately after the goods arrive in Kenya.
+          </p>
+        </div>
+
+        <p class="note">
+          Service Fee is calculated from Item Value in KSh + Shipping Fee + Factory/Warehouse Delivery Fee. Shipping fee is calculated now but paid after the goods arrive in Kenya.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function updateOrderValueUsd() {
+      const unitPriceUsd = Number(document.getElementById("unitPriceUsd").value);
+      const itemQuantity = Number(document.getElementById("itemQuantity").value);
+
+      if (unitPriceUsd > 0 && itemQuantity > 0) {
+        document.getElementById("orderValueUsd").value = (unitPriceUsd * itemQuantity).toFixed(2);
+      }
+    }
+
+    function handleQuantityChange() {
+      updateOrderValueUsd();
+
+      const cbmPerItem = Number(document.getElementById("cbmPerItem").value);
+      const totalCbm = Number(document.getElementById("totalCbm").value);
+
+      if (cbmPerItem > 0) {
+        updateTotalCbm();
+      } else if (totalCbm > 0) {
+        updateCbmPerItem();
+      }
+    }
+
+    function autoCalculate() {
+      const orderValueUsd = Number(document.getElementById("orderValueUsd").value);
+      const usdRate = Number(document.getElementById("usdRate").value);
+      const totalCbm = Number(document.getElementById("totalCbm").value);
+      const shippingPerCbm = Number(document.getElementById("shippingPerCbm").value);
+      const warehouseDeliveryFeeUsd = Number(document.getElementById("warehouseDeliveryFee").value || 0);
+
+      if (orderValueUsd > 0 && usdRate > 0 && totalCbm >= 0 && shippingPerCbm >= 0) {
+        calculateImportCost(false);
+      }
+    }
+
+    function updateTotalCbm() {
+      const cbmPerItem = Number(document.getElementById("cbmPerItem").value);
+      const itemQuantity = Number(document.getElementById("itemQuantity").value);
+
+      if (cbmPerItem > 0 && itemQuantity > 0) {
+        document.getElementById("totalCbm").value = (cbmPerItem * itemQuantity).toFixed(3);
+      }
+    }
+
+    function updateCbmPerItem() {
+      const totalCbm = Number(document.getElementById("totalCbm").value);
+      const itemQuantity = Number(document.getElementById("itemQuantity").value);
+
+      if (totalCbm > 0 && itemQuantity > 0) {
+        document.getElementById("cbmPerItem").value = (totalCbm / itemQuantity).toFixed(3);
+      }
+    }
+
+    function formatKsh(amount) {
+      return "KSh " + amount.toLocaleString("en-KE", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      });
+    }
+
+    function getServiceFee(commissionBase) {
+      if (commissionBase < 5000) {
+        return {
+          rateText: "Flat KSh 500",
+          amount: 500
+        };
+      } else if (commissionBase <= 10000) {
+        return {
+          rateText: "10%",
+          amount: commissionBase * 0.10
+        };
+      } else if (commissionBase <= 50000) {
+        return {
+          rateText: "7.5%",
+          amount: commissionBase * 0.075
+        };
+      } else if (commissionBase <= 100000) {
+        return {
+          rateText: "7%",
+          amount: commissionBase * 0.07
+        };
+      } else if (commissionBase <= 300000) {
+        return {
+          rateText: "6%",
+          amount: commissionBase * 0.06
+        };
+      } else if (commissionBase <= 500000) {
+        return {
+          rateText: "5%",
+          amount: commissionBase * 0.05
+        };
+      } else {
+        return {
+          rateText: "4%",
+          amount: commissionBase * 0.04
+        };
+      }
+    }
+
+    function calculateImportCost(showAlert = true) {
+      const orderValueUsd = Number(document.getElementById("orderValueUsd").value);
+      const usdRate = Number(document.getElementById("usdRate").value);
+      const totalCbm = Number(document.getElementById("totalCbm").value);
+      const shippingPerCbm = Number(document.getElementById("shippingPerCbm").value);
+      const warehouseDeliveryFeeUsd = Number(document.getElementById("warehouseDeliveryFee").value || 0);
+
+      if (orderValueUsd <= 0 || usdRate <= 0 || totalCbm < 0 || shippingPerCbm < 0) {
+        if (showAlert) {
+          alert("Please enter valid values before calculating.");
+        }
+        return;
+      }
+
+      const itemValueKsh = orderValueUsd * usdRate;
+      const shippingFee = totalCbm * shippingPerCbm;
+      const warehouseDeliveryFeeKsh = warehouseDeliveryFeeUsd * usdRate;
+      const totalEstimatedCostsBeforeServiceFee = itemValueKsh + shippingFee + warehouseDeliveryFeeKsh;
+      const serviceFee = getServiceFee(totalEstimatedCostsBeforeServiceFee);
+      const totalPayable = totalEstimatedCostsBeforeServiceFee + serviceFee.amount;
+      const amountPayableNow = totalPayable - shippingFee;
+      const itemQuantity = Number(document.getElementById("itemQuantity").value);
+      const finalUnitPrice = itemQuantity > 0 ? totalPayable / itemQuantity : 0;
+
+      document.getElementById("itemValueResult").textContent = formatKsh(itemValueKsh);
+      document.getElementById("shippingFeeResult").textContent = formatKsh(shippingFee);
+      document.getElementById("warehouseDeliveryFeeResult").textContent = formatKsh(warehouseDeliveryFeeKsh);
+      document.getElementById("commissionRateResult").textContent = serviceFee.rateText;
+      document.getElementById("commissionAmountResult").textContent = formatKsh(serviceFee.amount);
+      document.getElementById("finalUnitPriceResult").textContent = formatKsh(finalUnitPrice);
+      document.getElementById("totalPayableResult").textContent = formatKsh(totalPayable);
+      document.getElementById("amountPayNowResult").textContent = formatKsh(amountPayableNow);
+    }
+
+    function resetCalculator() {
+      document.getElementById("unitPriceUsd").value = "";
+      document.getElementById("itemQuantity").value = "";
+      document.getElementById("orderValueUsd").value = "";
+      document.getElementById("usdRate").value = "";
+      document.getElementById("cbmPerItem").value = "";
+      document.getElementById("totalCbm").value = "";
+      document.getElementById("shippingPerCbm").value = "";
+      document.getElementById("warehouseDeliveryFee").value = "";
+
+      document.getElementById("itemValueResult").textContent = "KSh 0";
+      document.getElementById("shippingFeeResult").textContent = "KSh 0";
+      document.getElementById("warehouseDeliveryFeeResult").textContent = "KSh 0";
+      document.getElementById("commissionRateResult").textContent = "0%";
+      document.getElementById("commissionAmountResult").textContent = "KSh 0";
+      document.getElementById("finalUnitPriceResult").textContent = "KSh 0";
+      document.getElementById("totalPayableResult").textContent = "KSh 0";
+      document.getElementById("amountPayNowResult").textContent = "KSh 0";
+    }
+  </script>
+<div class="container">
+    <div class="card" style="margin-top: 28px;">
+      <h2>Service Fee Guide</h2>
+
+      <div class="result-box"><span>Below KSh 5,000</span><span>Flat KSh 500</span></div>
+      <div class="result-box"><span>KSh 5,001 – 10,000</span><span>10%</span></div>
+      <div class="result-box"><span>KSh 10,001 – 50,000</span><span>7.5%</span></div>
+      <div class="result-box"><span>KSh 50,001 – 100,000</span><span>7%</span></div>
+      <div class="result-box"><span>KSh 100,001 – 300,000</span><span>6%</span></div>
+      <div class="result-box"><span>KSh 300,001 – 500,000</span><span>5%</span></div>
+      <div class="result-box"><span>Above KSh 500,000</span><span>4%</span></div>
+    </div>
+  </div>
+</body>
+</html>
