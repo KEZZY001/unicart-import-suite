@@ -932,9 +932,27 @@
       <section class="breakdown-section">
         <div class="card">
           <div class="card-header">
-            <h2>Item Cost Breakdown</h2>
+            <h2>Profitability Table</h2>
           </div>
-          <div class="card-body item-breakdown" id="itemBreakdown"></div>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Item</th>
+                  <th>Qty</th>
+                  <th>Supplier Price</th>
+                  <th>Landed Cost / Unit</th>
+                  <th>Recommended Price</th>
+                  <th>Wholesale Price</th>
+                  <th>Premium Price</th>
+                  <th>Profit / Unit</th>
+                  <th>Details</th>
+                </tr>
+              </thead>
+              <tbody id="profitTableBody"></tbody>
+            </table>
+          </div>
         </div>
 
         <div class="service-guide" id="service-fee">
@@ -1109,14 +1127,14 @@
     }
 
     function renderItemBreakdown(items, usdRate, shippingPerCbm, warehouseDeliveryFeeKsh, serviceFeeAmount, itemValueKsh) {
-      const container = document.getElementById("itemBreakdown");
-      container.innerHTML = "";
+      const tableBody = document.getElementById("profitTableBody");
+      tableBody.innerHTML = "";
 
       if (!items.length || itemValueKsh <= 0) return;
 
       let totalExpectedProfit = 0;
 
-      items.forEach(item => {
+      items.forEach((item, index) => {
         const itemTotalKsh = item.totalUsd * usdRate;
         const itemBaseKsh = item.quantity > 0 ? itemTotalKsh / item.quantity : 0;
         const itemShippingKsh = item.cbmPerItem * shippingPerCbm;
@@ -1128,29 +1146,51 @@
         const wholesaleResale = landedUnitCost * 1.35;
         const retailResale = landedUnitCost * 1.60;
         const premiumResale = landedUnitCost * 1.85;
+        const profitPerUnit = retailResale - landedUnitCost;
 
-        totalExpectedProfit += (retailResale - landedUnitCost) * item.quantity;
+        totalExpectedProfit += profitPerUnit * item.quantity;
 
-        const card = document.createElement("div");
-        card.className = "breakdown-card";
-        card.innerHTML = `
-          <h3>${item.name}</h3>
-          <div class="breakdown-line"><span>Quantity</span><strong>${item.quantity}</strong></div>
-          <div class="breakdown-line"><span>Supplier Unit Price</span><strong>$${item.priceUsd.toFixed(2)}</strong></div>
-          <div class="breakdown-line"><span>Product Cost / Unit</span><strong>${formatKsh(itemBaseKsh)}</strong></div>
-          <div class="breakdown-line"><span>Shipping / Unit</span><strong>${formatKsh(itemShippingKsh)}</strong></div>
-          <div class="breakdown-line"><span>Delivery Fee Share / Unit</span><strong>${formatKsh(deliverySharePerItem)}</strong></div>
-          <div class="breakdown-line"><span>Service Fee Share / Unit</span><strong>${formatKsh(serviceSharePerItem)}</strong></div>
-          <div class="breakdown-line"><span>Final Landed Unit Cost</span><strong>${formatKsh(landedUnitCost)}</strong></div>
-          <div class="profit-price"><span>Recommended Resale Price</span><span>${formatKsh(retailResale)}</span></div>
-          <div class="breakdown-line"><span>Wholesale Minimum</span><strong>${formatKsh(wholesaleResale)}</strong></div>
-          <div class="breakdown-line"><span>Premium Retail Target</span><strong>${formatKsh(premiumResale)}</strong></div>
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td><strong>${item.name}</strong></td>
+          <td>${item.quantity}</td>
+          <td>$${item.priceUsd.toFixed(2)}</td>
+          <td>${formatKsh(landedUnitCost)}</td>
+          <td><strong>${formatKsh(retailResale)}</strong></td>
+          <td>${formatKsh(wholesaleResale)}</td>
+          <td>${formatKsh(premiumResale)}</td>
+          <td style="color:#16a34a;font-weight:800;">${formatKsh(profitPerUnit)}</td>
+          <td>
+            <button class="save-btn" type="button" onclick="toggleDetails(${index})">View</button>
+          </td>
         `;
-        container.appendChild(card);
+
+        const detailsRow = document.createElement("tr");
+        detailsRow.id = `details-${index}`;
+        detailsRow.style.display = "none";
+        detailsRow.innerHTML = `
+          <td colspan="9">
+            <div class="breakdown-card">
+              <div class="breakdown-line"><span>Product Cost / Unit</span><strong>${formatKsh(itemBaseKsh)}</strong></div>
+              <div class="breakdown-line"><span>Shipping / Unit</span><strong>${formatKsh(itemShippingKsh)}</strong></div>
+              <div class="breakdown-line"><span>Delivery Fee Share / Unit</span><strong>${formatKsh(deliverySharePerItem)}</strong></div>
+              <div class="breakdown-line"><span>Service Fee Share / Unit</span><strong>${formatKsh(serviceSharePerItem)}</strong></div>
+              <div class="breakdown-line"><span>Final Landed Unit Cost</span><strong>${formatKsh(landedUnitCost)}</strong></div>
+            </div>
+          </td>
+        `;
+
+        tableBody.appendChild(row);
+        tableBody.appendChild(detailsRow);
       });
 
       document.getElementById("expectedProfitResult").textContent = formatKsh(totalExpectedProfit);
       document.getElementById("kpiProfit").textContent = formatKsh(totalExpectedProfit);
+    }
+
+    function toggleDetails(index) {
+      const row = document.getElementById(`details-${index}`);
+      row.style.display = row.style.display === "none" ? "table-row" : "none";
     }
 
     function calculateImportCost(showAlert = true) {
@@ -1196,7 +1236,7 @@
       document.getElementById("shippingPerCbm").value = "";
       document.getElementById("warehouseDeliveryFee").value = "";
       document.getElementById("totalQuantityValue").value = "0";
-      document.getElementById("itemBreakdown").innerHTML = "";
+      document.getElementById("profitTableBody").innerHTML = "";
 
       document.getElementById("itemValueResult").textContent = "KSh 0";
       document.getElementById("shippingFeeResult").textContent = "KSh 0";
