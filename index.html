@@ -63,6 +63,39 @@
       margin-bottom: 16px;
     }
 
+    .item-row {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr 1fr 1fr auto;
+      gap: 10px;
+      align-items: end;
+      margin-bottom: 12px;
+      padding: 14px;
+      background: #f9fafb;
+      border: 1px solid #e5e7eb;
+      border-radius: 14px;
+    }
+
+    .item-row label {
+      font-size: 12px;
+      margin-bottom: 5px;
+    }
+
+    .remove-item-btn {
+      background: #fee2e2;
+      color: #991b1b;
+      padding: 12px;
+      border-radius: 10px;
+      flex: unset;
+    }
+
+    .add-item-btn {
+      width: 100%;
+      background: #ecfdf5;
+      color: #047857;
+      border: 1px solid #bbf7d0;
+      margin-bottom: 18px;
+    }
+
     .section-title {
       margin: 22px 0 14px;
       padding-top: 18px;
@@ -236,6 +269,10 @@
         padding: 16px;
       }
 
+      .item-row {
+        grid-template-columns: 1fr;
+      }
+
       .calculator {
         grid-template-columns: 1fr;
       }
@@ -253,7 +290,7 @@
 <body>
   <div class="container">
     <div class="header">
-      <h1>Import Cost Calculator</h1>
+      <h1>Import Cost & Service Fee Calculator</h1>
       <p>Calculate item value, shipping fee, service fee, and total buyer payment.</p>
     </div>
 
@@ -261,21 +298,15 @@
       <div class="card">
         <h2>Enter Order Details</h2>
 
-        <h3 class="section-title">Item Value Calculator</h3>
-        <p class="helper-text">Enter unit price and quantity to automatically get the order value in USD.</p>
+        <h3 class="section-title">Item List Calculator</h3>
+        <p class="helper-text">Add different items with their own prices, quantities, and CBM per item.</p>
+
+        <div id="itemsContainer"></div>
+
+        <button class="add-item-btn" onclick="addItemRow()" type="button">+ Add Another Item</button>
 
         <div class="form-group">
-          <label for="unitPriceUsd">Unit Price in USD</label>
-          <input type="number" id="unitPriceUsd" placeholder="Example: 12.5" step="0.01" oninput="updateOrderValueUsd(); autoCalculate();" />
-        </div>
-
-        <div class="form-group">
-          <label for="itemQuantity">Quantity</label>
-          <input type="number" id="itemQuantity" placeholder="Example: 20" oninput="handleQuantityChange(); autoCalculate();" />
-        </div>
-
-        <div class="form-group">
-          <label for="orderValueUsd">Order Value in USD</label>
+          <label for="orderValueUsd">Total Order Value in USD</label>
           <input type="number" id="orderValueUsd" placeholder="Example: 250" step="0.01" oninput="autoCalculate();" />
         </div>
 
@@ -284,17 +315,12 @@
           <input type="number" id="usdRate" placeholder="Example: 130" oninput="autoCalculate();" />
         </div>
 
-        <h3 class="section-title">CBM Calculator</h3>
-        <p class="helper-text">Enter either CBM per item or total CBM together with quantity. The calculator will automatically compute the missing value.</p>
-
-        <div class="form-group">
-          <label for="cbmPerItem">CBM per Item</label>
-          <input type="number" id="cbmPerItem" placeholder="Example: 0.028" step="0.001" oninput="updateTotalCbm(); autoCalculate();" />
-        </div>
+        <h3 class="section-title">CBM Summary</h3>
+        <p class="helper-text">Total CBM is automatically calculated from the item list. You can still edit it manually if needed.</p>
 
         <div class="form-group">
           <label for="totalCbm">Total CBM</label>
-          <input type="number" id="totalCbm" placeholder="Example: 0.56" step="0.001" oninput="updateCbmPerItem(); autoCalculate();" />
+          <input type="number" id="totalCbm" placeholder="Example: 0.56" step="0.001" oninput="autoCalculate();" />
         </div>
 
         <div class="form-group">
@@ -324,11 +350,6 @@
         <div class="result-box">
           <span>Shipping Fee</span>
           <span id="shippingFeeResult">KSh 0</span>
-        </div>
-
-        <div class="result-box">
-          <span>Factory/Warehouse Delivery Fee</span>
-          <span id="warehouseDeliveryFeeResult">KSh 0</span>
         </div>
 
         <div class="result-box">
@@ -372,56 +393,61 @@
   </div>
 
   <script>
-    function updateOrderValueUsd() {
-      const unitPriceUsd = Number(document.getElementById("unitPriceUsd").value);
-      const itemQuantity = Number(document.getElementById("itemQuantity").value);
+    let itemCount = 0;
 
-      if (unitPriceUsd > 0 && itemQuantity > 0) {
-        document.getElementById("orderValueUsd").value = (unitPriceUsd * itemQuantity).toFixed(2);
-      }
+    function addItemRow() {
+      itemCount++;
+      const container = document.getElementById("itemsContainer");
+      const row = document.createElement("div");
+      row.className = "item-row";
+      row.innerHTML = `
+        <div>
+          <label>Item Name</label>
+          <input type="text" class="item-name" placeholder="Example: Bag" oninput="updateItemsSummary()" />
+        </div>
+        <div>
+          <label>Unit Price USD</label>
+          <input type="number" class="item-price" placeholder="12.5" step="0.01" oninput="updateItemsSummary()" />
+        </div>
+        <div>
+          <label>Quantity</label>
+          <input type="number" class="item-quantity" placeholder="20" oninput="updateItemsSummary()" />
+        </div>
+        <div>
+          <label>CBM per Item</label>
+          <input type="number" class="item-cbm" placeholder="0.028" step="0.001" oninput="updateItemsSummary()" />
+        </div>
+        <button class="remove-item-btn" onclick="removeItemRow(this)" type="button">Remove</button>
+      `;
+      container.appendChild(row);
+      updateItemsSummary();
     }
 
-    function handleQuantityChange() {
-      updateOrderValueUsd();
-
-      const cbmPerItem = Number(document.getElementById("cbmPerItem").value);
-      const totalCbm = Number(document.getElementById("totalCbm").value);
-
-      if (cbmPerItem > 0) {
-        updateTotalCbm();
-      } else if (totalCbm > 0) {
-        updateCbmPerItem();
-      }
+    function removeItemRow(button) {
+      button.closest(".item-row").remove();
+      updateItemsSummary();
     }
 
-    function autoCalculate() {
-      const orderValueUsd = Number(document.getElementById("orderValueUsd").value);
-      const usdRate = Number(document.getElementById("usdRate").value);
-      const totalCbm = Number(document.getElementById("totalCbm").value);
-      const shippingPerCbm = Number(document.getElementById("shippingPerCbm").value);
-      const warehouseDeliveryFeeUsd = Number(document.getElementById("warehouseDeliveryFee").value || 0);
+    function updateItemsSummary() {
+      const rows = document.querySelectorAll(".item-row");
+      let totalOrderValueUsd = 0;
+      let totalCbm = 0;
+      let totalQuantity = 0;
 
-      if (orderValueUsd > 0 && usdRate > 0 && totalCbm >= 0 && shippingPerCbm >= 0) {
-        calculateImportCost(false);
-      }
-    }
+      rows.forEach(row => {
+        const price = Number(row.querySelector(".item-price").value || 0);
+        const quantity = Number(row.querySelector(".item-quantity").value || 0);
+        const cbm = Number(row.querySelector(".item-cbm").value || 0);
 
-    function updateTotalCbm() {
-      const cbmPerItem = Number(document.getElementById("cbmPerItem").value);
-      const itemQuantity = Number(document.getElementById("itemQuantity").value);
+        totalOrderValueUsd += price * quantity;
+        totalCbm += cbm * quantity;
+        totalQuantity += quantity;
+      });
 
-      if (cbmPerItem > 0 && itemQuantity > 0) {
-        document.getElementById("totalCbm").value = (cbmPerItem * itemQuantity).toFixed(3);
-      }
-    }
-
-    function updateCbmPerItem() {
-      const totalCbm = Number(document.getElementById("totalCbm").value);
-      const itemQuantity = Number(document.getElementById("itemQuantity").value);
-
-      if (totalCbm > 0 && itemQuantity > 0) {
-        document.getElementById("cbmPerItem").value = (totalCbm / itemQuantity).toFixed(3);
-      }
+      document.getElementById("orderValueUsd").value = totalOrderValueUsd > 0 ? totalOrderValueUsd.toFixed(2) : "";
+      document.getElementById("totalCbm").value = totalCbm > 0 ? totalCbm.toFixed(3) : "";
+      document.getElementById("totalQuantityValue").value = totalQuantity;
+      autoCalculate();
     }
 
     function formatKsh(amount) {
@@ -475,7 +501,7 @@
       const usdRate = Number(document.getElementById("usdRate").value);
       const totalCbm = Number(document.getElementById("totalCbm").value);
       const shippingPerCbm = Number(document.getElementById("shippingPerCbm").value);
-      const warehouseDeliveryFeeUsd = Number(document.getElementById("warehouseDeliveryFee").value || 0);
+      const warehouseDeliveryFee = Number(document.getElementById("warehouseDeliveryFee").value || 0);
 
       if (orderValueUsd <= 0 || usdRate <= 0 || totalCbm < 0 || shippingPerCbm < 0) {
         if (showAlert) {
@@ -491,7 +517,7 @@
       const serviceFee = getServiceFee(totalEstimatedCostsBeforeServiceFee);
       const totalPayable = totalEstimatedCostsBeforeServiceFee + serviceFee.amount;
       const amountPayableNow = totalPayable - shippingFee;
-      const itemQuantity = Number(document.getElementById("itemQuantity").value);
+      const itemQuantity = Number(document.getElementById("totalQuantityValue").value || 0);
       const finalUnitPrice = itemQuantity > 0 ? totalPayable / itemQuantity : 0;
 
       document.getElementById("itemValueResult").textContent = formatKsh(itemValueKsh);
@@ -505,8 +531,8 @@
     }
 
     function resetCalculator() {
-      document.getElementById("unitPriceUsd").value = "";
-      document.getElementById("itemQuantity").value = "";
+      document.getElementById("itemsContainer").innerHTML = "";
+      document.getElementById("totalQuantityValue").value = "0";
       document.getElementById("orderValueUsd").value = "";
       document.getElementById("usdRate").value = "";
       document.getElementById("cbmPerItem").value = "";
@@ -523,6 +549,9 @@
       document.getElementById("totalPayableResult").textContent = "KSh 0";
       document.getElementById("amountPayNowResult").textContent = "KSh 0";
     }
+      window.onload = function() {
+      addItemRow();
+    };
   </script>
 <div class="container">
     <div class="card" style="margin-top: 28px;">
