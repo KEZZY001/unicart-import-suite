@@ -284,6 +284,32 @@
       gap: 12px;
     }
 
+    .profit-summary {
+      margin-top: 22px;
+      padding: 22px;
+      border-radius: 18px;
+      background: linear-gradient(135deg, #052e16, #15803d);
+      color: white;
+      box-shadow: 0 18px 38px rgba(21, 128, 61, 0.25);
+    }
+
+    .profit-summary p {
+      color: #dcfce7;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .profit-summary h3 {
+      font-size: 32px;
+      margin-bottom: 8px;
+    }
+
+    .profit-summary small {
+      color: #bbf7d0;
+      line-height: 1.5;
+      display: block;
+    }
+
     .result-box span:first-child {
       color: #6b7280;
     }
@@ -510,6 +536,12 @@
           </p>
         </div>
 
+        <div class="profit-summary">
+          <p>Expected Profit</p>
+          <h3 id="expectedProfitResult">KSh 0</h3>
+          <small>Estimated profit based on the recommended resale prices for all listed items.</small>
+        </div>
+
         <div class="item-breakdown" id="itemBreakdown"></div>
 
         <p class="note">
@@ -669,6 +701,8 @@
       title.textContent = "Individual Item Cost & Resale Guide";
       container.appendChild(title);
 
+      let totalExpectedProfit = 0;
+
       items.forEach(item => {
         const itemTotalKsh = item.totalUsd * usdRate;
         const itemBaseKsh = item.quantity > 0 ? itemTotalKsh / item.quantity : 0;
@@ -681,6 +715,8 @@
         const wholesaleResale = landedUnitCost * 1.35;
         const retailResale = landedUnitCost * 1.60;
         const premiumResale = landedUnitCost * 1.85;
+
+        totalExpectedProfit += (retailResale - landedUnitCost) * item.quantity;
 
         const card = document.createElement("div");
         card.className = "breakdown-card";
@@ -699,6 +735,8 @@
         `;
         container.appendChild(card);
       });
+
+      document.getElementById("expectedProfitResult").textContent = formatKsh(totalExpectedProfit);
     }
 
     function calculateImportCost(showAlert = true) {
@@ -753,6 +791,7 @@
       document.getElementById("finalUnitPriceResult").textContent = "KSh 0";
       document.getElementById("totalPayableResult").textContent = "KSh 0";
       document.getElementById("amountPayNowResult").textContent = "KSh 0";
+      document.getElementById("expectedProfitResult").textContent = "KSh 0";
 
       addItemRow();
       loadUsdRate();
