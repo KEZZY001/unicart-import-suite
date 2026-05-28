@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>UniCart Import Cost Calculator</title>
+  <title>Import Cost & Service Fee Calculator</title>
   <style>
     * {
       box-sizing: border-box;
@@ -14,7 +14,9 @@
 
     body {
       min-height: 100vh;
-      background: #f4f7fb;
+      background:
+        radial-gradient(circle at top left, rgba(37, 99, 235, 0.18), transparent 30%),
+        linear-gradient(135deg, #eef4ff 0%, #f8fafc 45%, #ecfeff 100%);
       color: #1f2937;
       padding: 24px;
     }
@@ -26,18 +28,65 @@
 
     .header {
       text-align: center;
-      margin-bottom: 28px;
+      margin-bottom: 32px;
+      padding: 34px 24px;
+      background: linear-gradient(135deg, #0f172a, #1d4ed8);
+      border-radius: 24px;
+      box-shadow: 0 20px 50px rgba(15, 23, 42, 0.22);
+      color: white;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .header::after {
+      content: "";
+      position: absolute;
+      width: 180px;
+      height: 180px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.12);
+      right: -60px;
+      top: -70px;
+    }
+
+    .brand-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      background: rgba(255, 255, 255, 0.14);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      padding: 9px 16px;
+      border-radius: 999px;
+      font-weight: 800;
+      letter-spacing: 0.4px;
+      margin-bottom: 14px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .brand-badge span {
+      width: 10px;
+      height: 10px;
+      background: #22c55e;
+      border-radius: 999px;
+      display: inline-block;
+      box-shadow: 0 0 0 5px rgba(34, 197, 94, 0.2);
     }
 
     .header h1 {
-      font-size: 32px;
-      margin-bottom: 8px;
-      color: #111827;
+      font-size: 38px;
+      margin-bottom: 10px;
+      color: white;
+      position: relative;
+      z-index: 1;
     }
 
     .header p {
-      color: #6b7280;
+      color: #dbeafe;
       font-size: 16px;
+      position: relative;
+      z-index: 1;
     }
 
     .calculator {
@@ -47,16 +96,30 @@
     }
 
     .card {
-      background: #ffffff;
-      padding: 24px;
-      border-radius: 18px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+      background: rgba(255, 255, 255, 0.92);
+      backdrop-filter: blur(12px);
+      padding: 26px;
+      border-radius: 22px;
+      border: 1px solid rgba(226, 232, 240, 0.9);
+      box-shadow: 0 18px 45px rgba(15, 23, 42, 0.09);
     }
 
     .card h2 {
       font-size: 22px;
       margin-bottom: 18px;
-      color: #111827;
+      color: #0f172a;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .card h2::before {
+      content: "";
+      width: 8px;
+      height: 24px;
+      background: #2563eb;
+      border-radius: 999px;
+      display: inline-block;
     }
 
     .form-group {
@@ -123,9 +186,11 @@
       width: 100%;
       padding: 14px;
       border: 1px solid #d1d5db;
-      border-radius: 12px;
+      border-radius: 14px;
       font-size: 16px;
       outline: none;
+      background: #f8fafc;
+      transition: 0.2s ease;
     }
 
     input:focus {
@@ -150,13 +215,20 @@
     }
 
     .calculate-btn {
-      background: #2563eb;
+      background: linear-gradient(135deg, #2563eb, #1d4ed8);
       color: white;
+      box-shadow: 0 10px 22px rgba(37, 99, 235, 0.28);
     }
 
     .reset-btn {
-      background: #e5e7eb;
+      background: #f1f5f9;
       color: #111827;
+      border: 1px solid #e2e8f0;
+    }
+
+    button:hover {
+      transform: translateY(-1px);
+      opacity: 0.96;
     }
 
     .result-box {
@@ -290,8 +362,9 @@
 <body>
   <div class="container">
     <div class="header">
-      <h1>Import Cost & Service Fee Calculator</h1>
-      <p>Calculate item value, shipping fee, service fee, and total buyer payment.</p>
+      <div class="brand-badge"><span></span> UniCart Imports KE</div>
+      <h1>UniCart CargoCalc</h1>
+      <p>Professional import cost calculator for China-to-Kenya orders, shipping, and service fees.</p>
     </div>
 
     <div class="calculator">
@@ -309,6 +382,8 @@
           <label for="orderValueUsd">Total Order Value in USD</label>
           <input type="number" id="orderValueUsd" placeholder="Example: 250" step="0.01" oninput="autoCalculate();" />
         </div>
+
+        <input type="hidden" id="totalQuantityValue" value="0" />
 
         <div class="form-group">
           <label for="usdRate">USD to KSh Rate</label>
@@ -353,6 +428,11 @@
         </div>
 
         <div class="result-box">
+          <span>Factory/Warehouse Delivery Fee</span>
+          <span id="warehouseDeliveryFeeResult">KSh 0</span>
+        </div>
+
+        <div class="result-box">
           <span>Service Fee Rate Used</span>
           <span id="commissionRateResult">0%</span>
         </div>
@@ -393,13 +473,37 @@
   </div>
 
   <script>
-    let itemCount = 0;
+    function formatKsh(amount) {
+      const safeAmount = Number(amount) || 0;
+      return "KSh " + safeAmount.toLocaleString("en-KE", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      });
+    }
+
+    function getServiceFee(serviceFeeBase) {
+      if (serviceFeeBase < 5000) {
+        return { rateText: "Flat KSh 500", amount: 500 };
+      } else if (serviceFeeBase <= 10000) {
+        return { rateText: "10%", amount: serviceFeeBase * 0.10 };
+      } else if (serviceFeeBase <= 50000) {
+        return { rateText: "7.5%", amount: serviceFeeBase * 0.075 };
+      } else if (serviceFeeBase <= 100000) {
+        return { rateText: "7%", amount: serviceFeeBase * 0.07 };
+      } else if (serviceFeeBase <= 300000) {
+        return { rateText: "6%", amount: serviceFeeBase * 0.06 };
+      } else if (serviceFeeBase <= 500000) {
+        return { rateText: "5%", amount: serviceFeeBase * 0.05 };
+      } else {
+        return { rateText: "4%", amount: serviceFeeBase * 0.04 };
+      }
+    }
 
     function addItemRow() {
-      itemCount++;
       const container = document.getElementById("itemsContainer");
       const row = document.createElement("div");
       row.className = "item-row";
+
       row.innerHTML = `
         <div>
           <label>Item Name</label>
@@ -419,6 +523,7 @@
         </div>
         <button class="remove-item-btn" onclick="removeItemRow(this)" type="button">Remove</button>
       `;
+
       container.appendChild(row);
       updateItemsSummary();
     }
@@ -447,65 +552,25 @@
       document.getElementById("orderValueUsd").value = totalOrderValueUsd > 0 ? totalOrderValueUsd.toFixed(2) : "";
       document.getElementById("totalCbm").value = totalCbm > 0 ? totalCbm.toFixed(3) : "";
       document.getElementById("totalQuantityValue").value = totalQuantity;
+
       autoCalculate();
     }
 
-    function formatKsh(amount) {
-      return "KSh " + amount.toLocaleString("en-KE", {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2
-      });
-    }
-
-    function getServiceFee(commissionBase) {
-      if (commissionBase < 5000) {
-        return {
-          rateText: "Flat KSh 500",
-          amount: 500
-        };
-      } else if (commissionBase <= 10000) {
-        return {
-          rateText: "10%",
-          amount: commissionBase * 0.10
-        };
-      } else if (commissionBase <= 50000) {
-        return {
-          rateText: "7.5%",
-          amount: commissionBase * 0.075
-        };
-      } else if (commissionBase <= 100000) {
-        return {
-          rateText: "7%",
-          amount: commissionBase * 0.07
-        };
-      } else if (commissionBase <= 300000) {
-        return {
-          rateText: "6%",
-          amount: commissionBase * 0.06
-        };
-      } else if (commissionBase <= 500000) {
-        return {
-          rateText: "5%",
-          amount: commissionBase * 0.05
-        };
-      } else {
-        return {
-          rateText: "4%",
-          amount: commissionBase * 0.04
-        };
-      }
+    function autoCalculate() {
+      calculateImportCost(false);
     }
 
     function calculateImportCost(showAlert = true) {
-      const orderValueUsd = Number(document.getElementById("orderValueUsd").value);
-      const usdRate = Number(document.getElementById("usdRate").value);
-      const totalCbm = Number(document.getElementById("totalCbm").value);
-      const shippingPerCbm = Number(document.getElementById("shippingPerCbm").value);
-      const warehouseDeliveryFee = Number(document.getElementById("warehouseDeliveryFee").value || 0);
+      const orderValueUsd = Number(document.getElementById("orderValueUsd").value || 0);
+      const usdRate = Number(document.getElementById("usdRate").value || 0);
+      const totalCbm = Number(document.getElementById("totalCbm").value || 0);
+      const shippingPerCbm = Number(document.getElementById("shippingPerCbm").value || 0);
+      const warehouseDeliveryFeeUsd = Number(document.getElementById("warehouseDeliveryFee").value || 0);
+      const totalQuantity = Number(document.getElementById("totalQuantityValue").value || 0);
 
-      if (orderValueUsd <= 0 || usdRate <= 0 || totalCbm < 0 || shippingPerCbm < 0) {
+      if (orderValueUsd <= 0 || usdRate <= 0) {
         if (showAlert) {
-          alert("Please enter valid values before calculating.");
+          alert("Please enter item price, quantity, and USD to KSh rate.");
         }
         return;
       }
@@ -513,12 +578,11 @@
       const itemValueKsh = orderValueUsd * usdRate;
       const shippingFee = totalCbm * shippingPerCbm;
       const warehouseDeliveryFeeKsh = warehouseDeliveryFeeUsd * usdRate;
-      const totalEstimatedCostsBeforeServiceFee = itemValueKsh + shippingFee + warehouseDeliveryFeeKsh;
-      const serviceFee = getServiceFee(totalEstimatedCostsBeforeServiceFee);
-      const totalPayable = totalEstimatedCostsBeforeServiceFee + serviceFee.amount;
+      const serviceFeeBase = itemValueKsh + shippingFee + warehouseDeliveryFeeKsh;
+      const serviceFee = getServiceFee(serviceFeeBase);
+      const totalPayable = serviceFeeBase + serviceFee.amount;
       const amountPayableNow = totalPayable - shippingFee;
-      const itemQuantity = Number(document.getElementById("totalQuantityValue").value || 0);
-      const finalUnitPrice = itemQuantity > 0 ? totalPayable / itemQuantity : 0;
+      const finalUnitPrice = totalQuantity > 0 ? totalPayable / totalQuantity : 0;
 
       document.getElementById("itemValueResult").textContent = formatKsh(itemValueKsh);
       document.getElementById("shippingFeeResult").textContent = formatKsh(shippingFee);
@@ -532,13 +596,12 @@
 
     function resetCalculator() {
       document.getElementById("itemsContainer").innerHTML = "";
-      document.getElementById("totalQuantityValue").value = "0";
       document.getElementById("orderValueUsd").value = "";
       document.getElementById("usdRate").value = "";
-      document.getElementById("cbmPerItem").value = "";
       document.getElementById("totalCbm").value = "";
       document.getElementById("shippingPerCbm").value = "";
       document.getElementById("warehouseDeliveryFee").value = "";
+      document.getElementById("totalQuantityValue").value = "0";
 
       document.getElementById("itemValueResult").textContent = "KSh 0";
       document.getElementById("shippingFeeResult").textContent = "KSh 0";
@@ -548,10 +611,13 @@
       document.getElementById("finalUnitPriceResult").textContent = "KSh 0";
       document.getElementById("totalPayableResult").textContent = "KSh 0";
       document.getElementById("amountPayNowResult").textContent = "KSh 0";
-    }
-      window.onload = function() {
+
       addItemRow();
-    };
+    }
+
+    window.addEventListener("DOMContentLoaded", function() {
+      addItemRow();
+    });
   </script>
 <div class="container">
     <div class="card" style="margin-top: 28px;">
