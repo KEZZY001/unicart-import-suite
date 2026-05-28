@@ -9,548 +9,949 @@
       box-sizing: border-box;
       margin: 0;
       padding: 0;
-      font-family: Arial, sans-serif;
+      font-family: Inter, Arial, sans-serif;
+    }
+
+    :root {
+      --navy: #07132f;
+      --navy-2: #0b1739;
+      --purple: #6d28d9;
+      --purple-2: #7c3aed;
+      --green: #16a34a;
+      --muted: #64748b;
+      --line: #e2e8f0;
+      --bg: #f6f8fc;
+      --card: #ffffff;
+      --text: #0f172a;
     }
 
     body {
       min-height: 100vh;
-      background:
-        radial-gradient(circle at top left, rgba(37, 99, 235, 0.18), transparent 30%),
-        linear-gradient(135deg, #eef4ff 0%, #f8fafc 45%, #ecfeff 100%);
-      color: #1f2937;
-      padding: 16px;
+      background: var(--bg);
+      color: var(--text);
+      padding: 14px;
     }
 
-    .container {
-      max-width: 1440px;
+    .app-shell {
+      max-width: 1520px;
       margin: auto;
-    }
-
-    .header {
-      text-align: center;
-      margin-bottom: 18px;
-      padding: 24px 20px;
-      background: linear-gradient(135deg, #0f172a, #1d4ed8);
-      border-radius: 24px;
-      box-shadow: 0 20px 50px rgba(15, 23, 42, 0.22);
-      color: white;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .header::after {
-      content: "";
-      position: absolute;
-      width: 180px;
-      height: 180px;
-      border-radius: 999px;
-      background: rgba(255, 255, 255, 0.12);
-      right: -60px;
-      top: -70px;
-    }
-
-    .brand-badge {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      background: rgba(255, 255, 255, 0.14);
-      border: 1px solid rgba(255, 255, 255, 0.25);
-      padding: 9px 16px;
-      border-radius: 999px;
-      font-weight: 800;
-      letter-spacing: 0.4px;
-      margin-bottom: 14px;
-      position: relative;
-      z-index: 1;
-    }
-
-    .brand-badge span {
-      width: 10px;
-      height: 10px;
-      background: #22c55e;
-      border-radius: 999px;
-      display: inline-block;
-      box-shadow: 0 0 0 5px rgba(34, 197, 94, 0.2);
-    }
-
-    .header h1 {
-      font-size: 34px;
-      margin-bottom: 10px;
-      color: white;
-      position: relative;
-      z-index: 1;
-    }
-
-    .header p {
-      color: #dbeafe;
-      font-size: 16px;
-      position: relative;
-      z-index: 1;
-    }
-
-    .calculator {
       display: grid;
-      grid-template-columns: minmax(0, 1.15fr) minmax(380px, 0.85fr);
-      gap: 16px;
+      grid-template-columns: 230px 1fr;
+      gap: 14px;
+    }
+
+    .sidebar {
+      background: linear-gradient(180deg, #06112d, #08183a);
+      color: white;
+      border-radius: 22px;
+      padding: 22px 16px;
+      min-height: calc(100vh - 28px);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      box-shadow: 0 20px 50px rgba(7, 19, 47, 0.22);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding-bottom: 24px;
+      border-bottom: 1px solid rgba(255,255,255,0.12);
+    }
+
+    .brand-icon {
+      width: 42px;
+      height: 42px;
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, #f59e0b, #7c3aed);
+      font-size: 22px;
+    }
+
+    .brand h2 {
+      font-size: 18px;
+      line-height: 1.1;
+    }
+
+    .brand p {
+      font-size: 12px;
+      color: #cbd5e1;
+      margin-top: 2px;
+    }
+
+    .nav {
+      margin-top: 26px;
+      display: grid;
+      gap: 8px;
+    }
+
+    .nav a {
+      text-decoration: none;
+      color: #dbeafe;
+      padding: 13px 14px;
+      border-radius: 13px;
+      font-size: 14px;
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .nav a.active,
+    .nav a:hover {
+      background: linear-gradient(135deg, var(--purple), var(--purple-2));
+      color: white;
+    }
+
+    .trust-card {
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 16px;
+      padding: 14px;
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .trust-card strong {
+      display: block;
+      font-size: 13px;
+    }
+
+    .trust-card small {
+      color: #cbd5e1;
+      font-size: 11px;
+    }
+
+    .main {
+      display: grid;
+      gap: 14px;
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      padding: 18px 20px;
+      box-shadow: 0 12px 35px rgba(15, 23, 42, 0.06);
+    }
+
+    .title h1 {
+      font-size: 30px;
+      letter-spacing: -0.5px;
+    }
+
+    .title h1 span {
+      color: var(--purple);
+    }
+
+    .title p {
+      color: var(--muted);
+      margin-top: 4px;
+      font-size: 14px;
+    }
+
+    .rate-pill {
+      min-width: 210px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 12px 14px;
+      background: #f8fafc;
+    }
+
+    .rate-pill label {
+      font-size: 12px;
+      color: var(--muted);
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .rate-pill label span {
+      color: var(--green);
+      font-weight: 800;
+    }
+
+    .rate-input-wrap {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      margin-top: 6px;
+      font-weight: 800;
+    }
+
+    .rate-input-wrap input {
+      border: none;
+      background: transparent;
+      font-size: 15px;
+      font-weight: 800;
+      padding: 0;
+      border-radius: 0;
+    }
+
+    .rate-input-wrap input:focus {
+      box-shadow: none;
+    }
+
+    .rate-status {
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .kpi-card {
+      background: linear-gradient(135deg, #171048, #07132f);
+      color: white;
+      padding: 18px;
+      border-radius: 16px;
+      display: flex;
+      gap: 14px;
+      align-items: center;
+      min-height: 88px;
+      box-shadow: 0 12px 30px rgba(7, 19, 47, 0.18);
+    }
+
+    .kpi-card.green {
+      background: linear-gradient(135deg, #062e24, #07132f);
+    }
+
+    .kpi-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background: rgba(124, 58, 237, 0.28);
+      font-size: 20px;
+      flex: 0 0 auto;
+    }
+
+    .kpi-card.green .kpi-icon {
+      background: rgba(22, 163, 74, 0.25);
+    }
+
+    .kpi-card p {
+      color: #cbd5e1;
+      font-size: 12px;
+      margin-bottom: 6px;
+    }
+
+    .kpi-card h3 {
+      font-size: 20px;
+      white-space: nowrap;
+    }
+
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.45fr) minmax(340px, 0.75fr);
+      gap: 14px;
       align-items: start;
     }
 
     .card {
-      background: rgba(255, 255, 255, 0.92);
-      backdrop-filter: blur(12px);
-      padding: 20px;
-      border-radius: 22px;
-      border: 1px solid rgba(226, 232, 240, 0.9);
-      box-shadow: 0 18px 45px rgba(15, 23, 42, 0.09);
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      box-shadow: 0 12px 32px rgba(15, 23, 42, 0.06);
+      overflow: hidden;
     }
 
-    .card h2 {
-      font-size: 20px;
-      margin-bottom: 14px;
-      color: #0f172a;
+    .card-header {
+      padding: 16px 18px;
       display: flex;
+      justify-content: space-between;
       align-items: center;
-      gap: 8px;
+      border-bottom: 1px solid var(--line);
     }
 
-    .card h2::before {
-      content: "";
-      width: 8px;
-      height: 24px;
-      background: #2563eb;
-      border-radius: 999px;
-      display: inline-block;
+    .card-header h2 {
+      font-size: 18px;
     }
 
-    .form-group {
-      margin-bottom: 12px;
+    .card-body {
+      padding: 16px 18px;
     }
 
-    .item-row {
-      display: grid;
-      grid-template-columns: 1.35fr 0.9fr 0.75fr 0.95fr 0.95fr auto;
-      gap: 8px;
-      align-items: end;
-      margin-bottom: 10px;
-      padding: 10px;
-      background: #f9fafb;
-      border: 1px solid #e5e7eb;
-      border-radius: 14px;
-    }
-
-    .item-row label {
-      font-size: 12px;
-      margin-bottom: 5px;
-    }
-
-    .remove-item-btn {
-      background: #fee2e2;
-      color: #991b1b;
-      padding: 12px;
-      border-radius: 10px;
-      flex: unset;
-    }
-
-    .add-item-btn {
-      width: 100%;
-      background: #ecfdf5;
-      color: #047857;
-      border: 1px solid #bbf7d0;
-      margin-bottom: 18px;
-    }
-
-    .section-title {
-      margin: 16px 0 10px;
-      padding-top: 12px;
-      border-top: 1px solid #e5e7eb;
-      font-size: 17px;
-      color: #111827;
-    }
-
-    .helper-text {
-      font-size: 13px;
-      color: #6b7280;
-      margin-top: -6px;
-      margin-bottom: 10px;
-      line-height: 1.4;
-    }
-
-    label {
-      display: block;
-      font-weight: 600;
-      margin-bottom: 8px;
-      color: #374151;
-    }
-
-    input {
-      width: 100%;
-      padding: 11px;
-      border: 1px solid #d1d5db;
-      border-radius: 14px;
-      font-size: 16px;
-      outline: none;
-      background: #f8fafc;
-      transition: 0.2s ease;
-    }
-
-    input:focus {
-      border-color: #2563eb;
-      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
-    }
-
-    .buttons {
-      display: flex;
-      gap: 10px;
-      margin-top: 14px;
-    }
-
-    button {
-      flex: 1;
+    .add-item-btn,
+    .calculate-btn,
+    .reset-btn,
+    .save-btn,
+    .pay-btn {
       border: none;
-      padding: 14px;
       border-radius: 12px;
-      font-size: 16px;
-      font-weight: bold;
+      font-weight: 800;
       cursor: pointer;
-    }
-
-    .calculate-btn {
-      background: linear-gradient(135deg, #2563eb, #1d4ed8);
-      color: white;
-      box-shadow: 0 10px 22px rgba(37, 99, 235, 0.28);
-    }
-
-    .reset-btn {
-      background: #f1f5f9;
-      color: #111827;
-      border: 1px solid #e2e8f0;
+      transition: 0.18s ease;
     }
 
     button:hover {
       transform: translateY(-1px);
-      opacity: 0.96;
+      opacity: 0.94;
+    }
+
+    .add-item-btn {
+      background: white;
+      border: 1px solid var(--purple);
+      color: var(--purple);
+      padding: 10px 14px;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 860px;
+    }
+
+    th {
+      background: #f8fafc;
+      color: #475569;
+      font-size: 12px;
+      text-align: left;
+      padding: 12px 10px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    td {
+      padding: 12px 10px;
+      border-bottom: 1px solid var(--line);
+      vertical-align: middle;
+      font-size: 13px;
+    }
+
+    .item-name-cell {
+      min-width: 170px;
+    }
+
+    .item-name-cell input {
+      font-weight: 800;
+    }
+
+    input {
+      width: 100%;
+      padding: 9px 10px;
+      border: 1px solid #cbd5e1;
+      border-radius: 9px;
+      font-size: 13px;
+      outline: none;
+      background: #fff;
+    }
+
+    input:focus {
+      border-color: var(--purple);
+      box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.12);
+    }
+
+    .remove-item-btn {
+      background: #fff1f2;
+      color: #e11d48;
+      border: 1px solid #fecdd3;
+      padding: 9px 10px;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+
+    .summary-stack {
+      display: grid;
+      gap: 14px;
+    }
+
+    .summary-card,
+    .profit-card,
+    .payment-card,
+    .service-guide {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 18px;
+      box-shadow: 0 12px 32px rgba(15, 23, 42, 0.06);
+    }
+
+    .summary-card h2,
+    .profit-card h2,
+    .payment-card h2,
+    .service-guide h2 {
+      font-size: 17px;
+      margin-bottom: 14px;
     }
 
     .result-box {
       display: flex;
       justify-content: space-between;
-      align-items: center;
-      padding: 10px 0;
-      border-bottom: 1px solid #e5e7eb;
       gap: 16px;
-    }
-
-    .item-breakdown {
-      margin-top: 14px;
-      display: grid;
-      gap: 14px;
-    }
-
-    .breakdown-card {
-      background: #f8fafc;
-      border: 1px solid #e2e8f0;
-      border-radius: 16px;
-      padding: 12px;
-    }
-
-    .breakdown-card h3 {
-      font-size: 16px;
-      margin-bottom: 10px;
-      color: #0f172a;
-    }
-
-    .breakdown-line {
-      display: flex;
-      justify-content: space-between;
-      gap: 12px;
-      padding: 7px 0;
+      padding: 11px 0;
+      border-bottom: 1px solid var(--line);
       font-size: 14px;
-      border-bottom: 1px dashed #e2e8f0;
-    }
-
-    .breakdown-line:last-child {
-      border-bottom: none;
-    }
-
-    .profit-price {
-      margin-top: 10px;
-      padding: 12px;
-      border-radius: 12px;
-      background: #ecfdf5;
-      color: #065f46;
-      font-weight: 800;
-      display: flex;
-      justify-content: space-between;
-      gap: 12px;
-    }
-
-    .profit-summary {
-      margin-top: 14px;
-      padding: 16px;
-      border-radius: 18px;
-      background: linear-gradient(135deg, #052e16, #15803d);
-      color: white;
-      box-shadow: 0 18px 38px rgba(21, 128, 61, 0.25);
-    }
-
-    .profit-summary p {
-      color: #dcfce7;
-      font-weight: 700;
-      margin-bottom: 8px;
-    }
-
-    .profit-summary h3 {
-      font-size: 32px;
-      margin-bottom: 8px;
-    }
-
-    .profit-summary small {
-      color: #bbf7d0;
-      line-height: 1.5;
-      display: block;
     }
 
     .result-box span:first-child {
-      color: #6b7280;
+      color: var(--muted);
     }
 
-    .result-box span:last-child {
-      font-weight: bold;
-      color: #111827;
+    .result-box span:last-child,
+    .result-box strong {
+      font-weight: 900;
       text-align: right;
     }
 
     .unit-price-highlight {
-      margin-top: 12px;
+      margin: 14px 0;
       padding: 14px;
-      background: #eff6ff;
-      border: 2px solid #2563eb;
-      border-radius: 16px;
+      border-radius: 14px;
+      background: #f3e8ff;
+      color: #5b21b6;
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      font-weight: 900;
     }
 
-    .unit-price-highlight span:first-child {
-      color: #1d4ed8;
-      font-weight: 700;
-    }
-
-    .unit-price-highlight span:last-child {
-      color: #1d4ed8;
-      font-size: 24px;
-      font-weight: 800;
-    }
-
-    .total {
+    .total-box {
       margin-top: 14px;
-      padding: 16px;
-      background: #ecfdf5;
-      border: 1px solid #bbf7d0;
+      background: linear-gradient(135deg, #171048, #07132f);
+      color: white;
       border-radius: 16px;
+      padding: 18px;
+    }
+
+    .total-box p {
+      color: #cbd5e1;
+      font-size: 13px;
+      margin-bottom: 6px;
+    }
+
+    .total-box h3 {
+      font-size: 26px;
+    }
+
+    .payment-card {
+      background: linear-gradient(135deg, #eff6ff, #f5f3ff);
+      border: 1px solid #bfdbfe;
       text-align: center;
     }
 
-    .total p {
-      color: #047857;
-      font-weight: 600;
+    .payment-card p {
+      color: #1d4ed8;
+      font-weight: 800;
       margin-bottom: 8px;
     }
 
-    .total h3 {
-      font-size: 30px;
-      color: #065f46;
-    }
-
-    .payment-section {
-      margin-top: 14px;
-      padding: 16px;
-      background: #eff6ff;
-      border: 2px solid #2563eb;
-      border-radius: 18px;
-      text-align: center;
-    }
-
-    .payment-section p {
-      color: #1d4ed8;
-      font-weight: 700;
-      margin-bottom: 10px;
-    }
-
-    .payment-section h3 {
-      font-size: 32px;
-      color: #1e40af;
-      margin-bottom: 16px;
+    .payment-card h3 {
+      font-size: 28px;
+      color: #1e3a8a;
+      margin-bottom: 14px;
     }
 
     .pay-btn {
       width: 100%;
-      background: #2563eb;
+      padding: 14px;
+      background: linear-gradient(135deg, var(--purple), var(--purple-2));
       color: white;
-      padding: 16px;
-      border-radius: 14px;
-      font-size: 17px;
-      font-weight: 700;
-      cursor: pointer;
-      border: none;
+      font-size: 15px;
     }
 
     .payment-note {
-      margin-top: 12px;
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      margin-top: 10px;
+      line-height: 1.5;
+    }
+
+    .profit-card {
+      background: linear-gradient(135deg, #1c1364, #07132f);
+      color: white;
+    }
+
+    .profit-card h2,
+    .profit-card .profit-number {
+      color: white;
+    }
+
+    .profit-number {
+      font-size: 32px;
+      margin: 8px 0;
+    }
+
+    .profit-card small {
+      color: #c4b5fd;
+      line-height: 1.5;
+    }
+
+    .breakdown-section {
+      display: grid;
+      grid-template-columns: minmax(0, 1.05fr) minmax(360px, 0.95fr);
+      gap: 14px;
+    }
+
+    .item-breakdown {
+      display: grid;
+      gap: 12px;
+    }
+
+    .breakdown-card {
+      background: #ffffff;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 14px;
+    }
+
+    .breakdown-card h3 {
+      font-size: 15px;
+      margin-bottom: 10px;
+    }
+
+    .breakdown-line,
+    .guide-line {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 8px 0;
+      border-bottom: 1px dashed var(--line);
       font-size: 13px;
-      color: #475569;
-      line-height: 1.5;
     }
 
-    .note {
-      margin-top: 18px;
-      font-size: 14px;
-      color: #6b7280;
-      line-height: 1.5;
+    .breakdown-line:last-child,
+    .guide-line:last-child {
+      border-bottom: none;
     }
 
-    @media (max-width: 768px) {
+    .profit-price {
+      margin: 10px 0;
+      padding: 12px;
+      border-radius: 13px;
+      background: #ecfdf5;
+      color: #065f46;
+      font-weight: 900;
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-top: 14px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 12px;
+      color: var(--muted);
+      font-weight: 800;
+      margin-bottom: 6px;
+    }
+
+    .helper-text {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.5;
+      margin-top: 10px;
+    }
+
+    .actions-row {
+      display: flex;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .calculate-btn {
+      flex: 1;
+      padding: 13px;
+      background: linear-gradient(135deg, var(--purple), var(--purple-2));
+      color: white;
+    }
+
+    .reset-btn,
+    .save-btn {
+      padding: 13px 18px;
+      background: white;
+      border: 1px solid var(--line);
+      color: var(--text);
+    }
+
+    .mobile-bottom-nav {
+      display: none;
+    }
+
+    @media (max-width: 1050px) {
+      .app-shell {
+        grid-template-columns: 1fr;
+      }
+
+      .sidebar {
+        display: none;
+      }
+
+      .kpi-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .dashboard-grid,
+      .breakdown-section {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 640px) {
       body {
-        padding: 16px;
+        padding: 0;
+        padding-bottom: 78px;
+        background: #f8fafc;
       }
 
-      .item-row {
-        grid-template-columns: 1fr;
+      .app-shell {
+        display: block;
       }
 
-      .calculator {
-        grid-template-columns: 1fr;
+      .main {
+        gap: 10px;
       }
 
-      .header h1 {
-        font-size: 26px;
-      }
-
-      .buttons {
+      .topbar {
+        border-radius: 0 0 24px 24px;
+        background: linear-gradient(135deg, #07132f, #6d28d9);
+        color: white;
+        align-items: flex-start;
         flex-direction: column;
+        gap: 14px;
+      }
+
+      .title h1 {
+        color: white;
+        font-size: 24px;
+      }
+
+      .title h1 span,
+      .title p {
+        color: #ddd6fe;
+      }
+
+      .rate-pill {
+        width: 100%;
+        background: rgba(255,255,255,0.08);
+        border-color: rgba(255,255,255,0.16);
+        color: white;
+      }
+
+      .rate-pill label,
+      .rate-status {
+        color: #ddd6fe;
+      }
+
+      .rate-input-wrap input {
+        color: white;
+      }
+
+      .kpi-grid {
+        grid-template-columns: repeat(2, 1fr);
+        padding: 0 12px;
+      }
+
+      .kpi-card {
+        padding: 14px;
+        min-height: 86px;
+      }
+
+      .kpi-icon {
+        display: none;
+      }
+
+      .kpi-card h3 {
+        font-size: 16px;
+      }
+
+      .dashboard-grid,
+      .breakdown-section {
+        padding: 0 12px;
+      }
+
+      .card,
+      .summary-card,
+      .profit-card,
+      .payment-card,
+      .service-guide {
+        border-radius: 18px;
+      }
+
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .actions-row {
+        flex-direction: column;
+      }
+
+      .mobile-bottom-nav {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 68px;
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        background: #07132f;
+        color: white;
+        z-index: 20;
+        border-radius: 22px 22px 0 0;
+        box-shadow: 0 -12px 30px rgba(7, 19, 47, 0.25);
+      }
+
+      .mobile-bottom-nav a {
+        color: #cbd5e1;
+        text-decoration: none;
+        display: grid;
+        place-items: center;
+        font-size: 11px;
+        padding-top: 8px;
       }
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <div class="header">
-      <div class="brand-badge"><span></span> UniCart Imports KE</div>
-      <h1>UniCart CargoCalc</h1>
-      <p>Professional import cost calculator for China-to-Kenya orders, shipping, and service fees.</p>
-    </div>
-
-    <div class="calculator">
-      <div class="card">
-        <h2>Enter Order Details</h2>
-
-        <h3 class="section-title">Item List Calculator</h3>
-        <p class="helper-text">Add different items with their own prices, quantities, and CBM per item.</p>
-
-        <div id="itemsContainer"></div>
-
-        <button class="add-item-btn" onclick="addItemRow()" type="button">+ Add Another Item</button>
-
-        <div class="form-group">
-          <label for="orderValueUsd">Total Order Value in USD</label>
-          <input type="number" id="orderValueUsd" placeholder="Example: 250" step="0.01" oninput="autoCalculate();" />
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div>
+        <div class="brand">
+          <div class="brand-icon">🛒</div>
+          <div>
+            <h2>UniCart</h2>
+            <p>Imports KE</p>
+          </div>
         </div>
 
-        <input type="hidden" id="totalQuantityValue" value="0" />
-
-        <div class="form-group">
-          <label for="usdRate">USD to KSh Rate</label>
-          <input type="number" id="usdRate" placeholder="Auto loading..." oninput="autoCalculate();" />
-          <p class="helper-text" id="rateStatus">Loading today’s USD rate...</p>
-        </div>
-
-        <h3 class="section-title">CBM Summary</h3>
-        <p class="helper-text">Total CBM is automatically calculated from the item list. You can still edit it manually if needed.</p>
-
-        <div class="form-group">
-          <label for="totalCbm">Total CBM</label>
-          <input type="number" id="totalCbm" placeholder="Example: 0.56" step="0.001" oninput="autoCalculate();" />
-        </div>
-
-        <div class="form-group">
-          <label for="shippingPerCbm">Shipping Fee per CBM in KSh</label>
-          <input type="number" id="shippingPerCbm" placeholder="Example: 52000" oninput="autoCalculate();" />
-        </div>
-
-        <div class="form-group">
-          <label for="warehouseDeliveryFee">Factory/Warehouse Delivery Fee (USD)</label>
-          <input type="number" id="warehouseDeliveryFee" placeholder="Example: 25" step="0.01" oninput="autoCalculate();" />
-        </div>
-
-        <div class="buttons">
-          <button class="calculate-btn" onclick="calculateImportCost()">Calculate</button>
-          <button class="reset-btn" onclick="resetCalculator()">Reset</button>
-        </div>
+        <nav class="nav">
+          <a href="#" class="active">🏠 Dashboard</a>
+          <a href="#calculator">🧮 Item Calculator</a>
+          <a href="#summary">📋 Summary</a>
+          <a href="#profit">📈 Profit Guide</a>
+          <a href="#service-fee">⚙️ Service Fees</a>
+          <a href="#">❔ Help & Guide</a>
+        </nav>
       </div>
 
-      <div class="card">
-        <h2>Calculation Results</h2>
-
-        <div class="result-box">
-          <span>Item Value in KSh</span>
-          <span id="itemValueResult">KSh 0</span>
+      <div class="trust-card">
+        <div class="brand-icon">🛡️</div>
+        <div>
+          <strong>UniCart Imports KE</strong>
+          <small>Your trusted import partner.</small>
         </div>
-
-        <div class="result-box">
-          <span>Shipping Fee</span>
-          <span id="shippingFeeResult">KSh 0</span>
-        </div>
-
-        <div class="result-box">
-          <span>Factory/Warehouse Delivery Fee</span>
-          <span id="warehouseDeliveryFeeResult">KSh 0</span>
-        </div>
-
-        <div class="result-box">
-          <span>Service Fee Rate Used</span>
-          <span id="commissionRateResult">0%</span>
-        </div>
-
-        <div class="result-box">
-          <span>Service Fee Amount</span>
-          <span id="commissionAmountResult">KSh 0</span>
-        </div>
-
-        <div class="result-box unit-price-highlight">
-          <span>Final Unit Price per Item</span>
-          <span id="finalUnitPriceResult">KSh 0</span>
-        </div>
-
-        <div class="total">
-          <p>Total Amount Buyer Should Pay</p>
-          <h3 id="totalPayableResult">KSh 0</h3>
-        </div>
-
-        <div class="payment-section">
-          <p>Amount Payable Now (Excluding Shipping Fee)</p>
-          <h3 id="amountPayNowResult">KSh 0</h3>
-
-          <button class="pay-btn">
-            Proceed to Payment
-          </button>
-
-          <p class="payment-note">
-            Shipping fee will be paid separately after the goods arrive in Kenya.
-          </p>
-        </div>
-
-        <div class="profit-summary">
-          <p>Expected Profit</p>
-          <h3 id="expectedProfitResult">KSh 0</h3>
-          <small>Estimated profit based on the recommended resale prices for all listed items.</small>
-        </div>
-
-        <div class="item-breakdown" id="itemBreakdown"></div>
-
-        <p class="note">
-          Service Fee is calculated from Item Value in KSh + Shipping Fee + Factory/Warehouse Delivery Fee. Shipping fee is calculated now but paid after the goods arrive in Kenya.
-        </p>
       </div>
-    </div>
+    </aside>
+
+    <main class="main">
+      <section class="topbar">
+        <div class="title">
+          <h1>UniCart <span>CargoCalc</span></h1>
+          <p>Smart. Accurate. Profitable Imports.</p>
+        </div>
+
+        <div class="rate-pill">
+          <label>USD Rate <span>● Live</span></label>
+          <div class="rate-input-wrap">
+            <span>1 USD =</span>
+            <input type="number" id="usdRate" placeholder="Auto" oninput="autoCalculate();" />
+            <span>KSh</span>
+          </div>
+          <div class="rate-status" id="rateStatus">Loading today’s USD rate...</div>
+        </div>
+      </section>
+
+      <section class="kpi-grid">
+        <div class="kpi-card">
+          <div class="kpi-icon">💲</div>
+          <div>
+            <p>Total Order Value (USD)</p>
+            <h3 id="kpiOrderUsd">$0.00</h3>
+          </div>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-icon">📦</div>
+          <div>
+            <p>Total CBM</p>
+            <h3 id="kpiCbm">0.000 CBM</h3>
+          </div>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-icon">🧊</div>
+          <div>
+            <p>Total Quantity</p>
+            <h3 id="kpiQuantity">0 Units</h3>
+          </div>
+        </div>
+
+        <div class="kpi-card green">
+          <div class="kpi-icon">💰</div>
+          <div>
+            <p>Total Landed Cost</p>
+            <h3 id="kpiLandedCost">KSh 0</h3>
+          </div>
+        </div>
+
+        <div class="kpi-card green">
+          <div class="kpi-icon">📈</div>
+          <div>
+            <p>Projected Profit</p>
+            <h3 id="kpiProfit">KSh 0</h3>
+          </div>
+        </div>
+      </section>
+
+      <section class="dashboard-grid" id="calculator">
+        <div class="card">
+          <div class="card-header">
+            <h2>Item List Calculator</h2>
+            <button class="add-item-btn" onclick="addItemRow()" type="button">＋ Add Item</button>
+          </div>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Item Name</th>
+                  <th>Unit Price (USD)</th>
+                  <th>Qty</th>
+                  <th>Total Value (USD)</th>
+                  <th>CBM / Unit</th>
+                  <th>Total CBM</th>
+                  <th>Unit Price (KSh)</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="itemsContainer"></tbody>
+              <tfoot>
+                <tr>
+                  <th colspan="3">TOTAL</th>
+                  <th id="tableTotalQty">0</th>
+                  <th id="tableTotalUsd">$0.00</th>
+                  <th></th>
+                  <th id="tableTotalCbm">0.000</th>
+                  <th></th>
+                  <th></th>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+
+          <div class="card-body">
+            <div class="form-grid">
+              <div class="form-group">
+                <label for="orderValueUsd">Total Order Value in USD</label>
+                <input type="number" id="orderValueUsd" placeholder="Example: 250" step="0.01" oninput="autoCalculate();" />
+              </div>
+
+              <div class="form-group">
+                <label for="totalCbm">Total CBM</label>
+                <input type="number" id="totalCbm" placeholder="Example: 0.56" step="0.001" oninput="autoCalculate();" />
+              </div>
+
+              <div class="form-group">
+                <label for="shippingPerCbm">Shipping Fee per CBM (KSh)</label>
+                <input type="number" id="shippingPerCbm" placeholder="Example: 52000" oninput="autoCalculate();" />
+              </div>
+
+              <div class="form-group">
+                <label for="warehouseDeliveryFee">Factory/Warehouse Delivery Fee (USD)</label>
+                <input type="number" id="warehouseDeliveryFee" placeholder="Example: 25" step="0.01" oninput="autoCalculate();" />
+              </div>
+            </div>
+
+            <input type="hidden" id="totalQuantityValue" value="0" />
+
+            <p class="helper-text">
+              Enter either Unit Price (USD) or Total Value (USD). If Total Value and Quantity are provided, Unit Price is calculated automatically.
+            </p>
+
+            <div class="actions-row">
+              <button class="reset-btn" onclick="resetCalculator()" type="button">Clear All</button>
+              <button class="save-btn" type="button">💾 Save Order</button>
+              <button class="calculate-btn" onclick="calculateImportCost()" type="button">🧮 Calculate</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="summary-stack" id="summary">
+          <div class="summary-card">
+            <h2>Cost Summary (KSh)</h2>
+            <div class="result-box"><span>Item Value</span><strong id="itemValueResult">KSh 0</strong></div>
+            <div class="result-box"><span>Shipping Fee</span><strong id="shippingFeeResult">KSh 0</strong></div>
+            <div class="result-box"><span>Factory/Warehouse Delivery Fee</span><strong id="warehouseDeliveryFeeResult">KSh 0</strong></div>
+            <div class="result-box"><span>Service Fee Rate</span><strong id="commissionRateResult">0%</strong></div>
+            <div class="result-box"><span>Service Fee Amount</span><strong id="commissionAmountResult">KSh 0</strong></div>
+
+            <div class="unit-price-highlight">
+              <span>Final Unit Price / Item</span>
+              <span id="finalUnitPriceResult">KSh 0</span>
+            </div>
+
+            <div class="total-box">
+              <p>Total Amount Buyer Should Pay</p>
+              <h3 id="totalPayableResult">KSh 0</h3>
+            </div>
+          </div>
+
+          <div class="payment-card">
+            <p>Amount Payable Now (Excluding Shipping Fee)</p>
+            <h3 id="amountPayNowResult">KSh 0</h3>
+            <button class="pay-btn">Proceed to Payment</button>
+            <small class="payment-note">Shipping fee will be paid separately after the goods arrive in Kenya.</small>
+          </div>
+
+          <div class="profit-card" id="profit">
+            <h2>Expected Profit Summary</h2>
+            <p>Total Expected Profit</p>
+            <div class="profit-number" id="expectedProfitResult">KSh 0</div>
+            <small>Estimated profit based on the recommended resale prices for all listed items.</small>
+          </div>
+        </div>
+      </section>
+
+      <section class="breakdown-section">
+        <div class="card">
+          <div class="card-header">
+            <h2>Item Cost Breakdown</h2>
+          </div>
+          <div class="card-body item-breakdown" id="itemBreakdown"></div>
+        </div>
+
+        <div class="service-guide" id="service-fee">
+          <h2>Service Fee Guide</h2>
+          <div class="guide-line"><span>Below KSh 5,000</span><strong>Flat KSh 500</strong></div>
+          <div class="guide-line"><span>KSh 5,001 – 10,000</span><strong>10%</strong></div>
+          <div class="guide-line"><span>KSh 10,001 – 50,000</span><strong>7.5%</strong></div>
+          <div class="guide-line"><span>KSh 50,001 – 100,000</span><strong>7%</strong></div>
+          <div class="guide-line"><span>KSh 100,001 – 300,000</span><strong>6%</strong></div>
+          <div class="guide-line"><span>KSh 300,001 – 500,000</span><strong>5%</strong></div>
+          <div class="guide-line"><span>Above KSh 500,000</span><strong>4%</strong></div>
+          <p class="helper-text">Service Fee is calculated from Item Value + Shipping Fee + Factory/Warehouse Delivery Fee.</p>
+        </div>
+      </section>
+    </main>
   </div>
+
+  <nav class="mobile-bottom-nav">
+    <a href="#">🏠<br>Home</a>
+    <a href="#calculator">🧮<br>Calculator</a>
+    <a href="#summary">📋<br>Summary</a>
+    <a href="#service-fee">☰<br>More</a>
+  </nav>
 
   <script>
     const BUSINESS_RATE_MULTIPLIER = 1.04;
@@ -558,6 +959,14 @@
     function formatKsh(amount) {
       const safeAmount = Number(amount) || 0;
       return "KSh " + safeAmount.toLocaleString("en-KE", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      });
+    }
+
+    function formatUsd(amount) {
+      const safeAmount = Number(amount) || 0;
+      return "$" + safeAmount.toLocaleString("en-US", {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2
       });
@@ -597,37 +1006,25 @@
 
     function addItemRow() {
       const container = document.getElementById("itemsContainer");
-      const row = document.createElement("div");
+      const row = document.createElement("tr");
       row.className = "item-row";
       row.innerHTML = `
-        <div>
-          <label>Item Name</label>
-          <input type="text" class="item-name" placeholder="Example: Bag" oninput="updateItemsSummary()" />
-        </div>
-        <div>
-          <label>Unit Price USD</label>
-          <input type="number" class="item-price" placeholder="12.50" step="0.01" oninput="updateItemRow(this, 'unit')" />
-        </div>
-        <div>
-          <label>Quantity</label>
-          <input type="number" class="item-quantity" placeholder="20" oninput="updateItemRow(this, 'quantity')" />
-        </div>
-        <div>
-          <label>Total Value USD</label>
-          <input type="number" class="item-total-usd" placeholder="250.00" step="0.01" oninput="updateItemRow(this, 'total')" />
-        </div>
-        <div>
-          <label>CBM per Item</label>
-          <input type="number" class="item-cbm" placeholder="0.028" step="0.001" oninput="updateItemsSummary()" />
-        </div>
-        <button class="remove-item-btn" onclick="removeItemRow(this)" type="button">Remove</button>
+        <td class="row-number"></td>
+        <td class="item-name-cell"><input type="text" class="item-name" placeholder="Example: Bag" oninput="updateItemsSummary()" /></td>
+        <td><input type="number" class="item-price" placeholder="12.50" step="0.01" oninput="updateItemRow(this, 'unit')" /></td>
+        <td><input type="number" class="item-quantity" placeholder="20" oninput="updateItemRow(this, 'quantity')" /></td>
+        <td><input type="number" class="item-total-usd" placeholder="250.00" step="0.01" oninput="updateItemRow(this, 'total')" /></td>
+        <td><input type="number" class="item-cbm" placeholder="0.028" step="0.001" oninput="updateItemsSummary()" /></td>
+        <td class="item-total-cbm">0.000</td>
+        <td class="item-price-ksh">KSh 0</td>
+        <td><button class="remove-item-btn" onclick="removeItemRow(this)" type="button">Remove</button></td>
       `;
       container.appendChild(row);
       updateItemsSummary();
     }
 
     function updateItemRow(input, changedField) {
-      const row = input.closest(".item-row");
+      const row = input.closest("tr");
       const priceInput = row.querySelector(".item-price");
       const quantityInput = row.querySelector(".item-quantity");
       const totalInput = row.querySelector(".item-total-usd");
@@ -652,13 +1049,14 @@
     }
 
     function removeItemRow(button) {
-      button.closest(".item-row").remove();
+      button.closest("tr").remove();
       updateItemsSummary();
     }
 
     function getItemsData() {
-      const rows = document.querySelectorAll(".item-row");
+      const rows = document.querySelectorAll("#itemsContainer tr");
       const items = [];
+      const usdRate = Number(document.getElementById("usdRate").value || 0);
 
       rows.forEach((row, index) => {
         const name = row.querySelector(".item-name").value.trim() || `Item ${index + 1}`;
@@ -667,9 +1065,14 @@
         const totalUsdInput = Number(row.querySelector(".item-total-usd").value || 0);
         const cbmPerItem = Number(row.querySelector(".item-cbm").value || 0);
         const totalUsd = totalUsdInput > 0 ? totalUsdInput : priceUsd * quantity;
+        const totalCbm = cbmPerItem * quantity;
+
+        row.querySelector(".row-number").textContent = index + 1;
+        row.querySelector(".item-total-cbm").textContent = totalCbm.toFixed(3);
+        row.querySelector(".item-price-ksh").textContent = formatKsh(priceUsd * usdRate);
 
         if (quantity > 0 && (priceUsd > 0 || totalUsd > 0)) {
-          items.push({ name, priceUsd, quantity, totalUsd, cbmPerItem });
+          items.push({ name, priceUsd, quantity, totalUsd, cbmPerItem, totalCbm });
         }
       });
 
@@ -679,17 +1082,24 @@
     function updateItemsSummary() {
       const items = getItemsData();
       const totalOrderValueUsd = items.reduce((sum, item) => sum + item.totalUsd, 0);
-      const totalCbm = items.reduce((sum, item) => sum + item.cbmPerItem * item.quantity, 0);
+      const totalCbm = items.reduce((sum, item) => sum + item.totalCbm, 0);
       const totalQuantity = items.reduce((sum, item) => sum + item.quantity, 0);
 
       document.getElementById("orderValueUsd").value = totalOrderValueUsd > 0 ? totalOrderValueUsd.toFixed(2) : "";
       document.getElementById("totalCbm").value = totalCbm > 0 ? totalCbm.toFixed(3) : "";
       document.getElementById("totalQuantityValue").value = totalQuantity;
+      document.getElementById("tableTotalQty").textContent = totalQuantity;
+      document.getElementById("tableTotalUsd").textContent = formatUsd(totalOrderValueUsd);
+      document.getElementById("tableTotalCbm").textContent = totalCbm.toFixed(3);
+      document.getElementById("kpiOrderUsd").textContent = formatUsd(totalOrderValueUsd);
+      document.getElementById("kpiCbm").textContent = totalCbm.toFixed(3) + " CBM";
+      document.getElementById("kpiQuantity").textContent = totalQuantity + " Units";
       calculateImportCost(false);
     }
 
     function autoCalculate() {
       calculateImportCost(false);
+      getItemsData();
     }
 
     function renderItemBreakdown(items, usdRate, shippingPerCbm, warehouseDeliveryFeeKsh, serviceFeeAmount, itemValueKsh) {
@@ -697,10 +1107,6 @@
       container.innerHTML = "";
 
       if (!items.length || itemValueKsh <= 0) return;
-
-      const title = document.createElement("h2");
-      title.textContent = "Individual Item Cost & Resale Guide";
-      container.appendChild(title);
 
       let totalExpectedProfit = 0;
 
@@ -738,6 +1144,7 @@
       });
 
       document.getElementById("expectedProfitResult").textContent = formatKsh(totalExpectedProfit);
+      document.getElementById("kpiProfit").textContent = formatKsh(totalExpectedProfit);
     }
 
     function calculateImportCost(showAlert = true) {
@@ -771,6 +1178,7 @@
       document.getElementById("finalUnitPriceResult").textContent = formatKsh(finalUnitPrice);
       document.getElementById("totalPayableResult").textContent = formatKsh(totalPayable);
       document.getElementById("amountPayNowResult").textContent = formatKsh(amountPayableNow);
+      document.getElementById("kpiLandedCost").textContent = formatKsh(totalPayable);
 
       renderItemBreakdown(items, usdRate, shippingPerCbm, warehouseDeliveryFeeKsh, serviceFee.amount, itemValueKsh);
     }
@@ -793,6 +1201,14 @@
       document.getElementById("totalPayableResult").textContent = "KSh 0";
       document.getElementById("amountPayNowResult").textContent = "KSh 0";
       document.getElementById("expectedProfitResult").textContent = "KSh 0";
+      document.getElementById("kpiOrderUsd").textContent = "$0.00";
+      document.getElementById("kpiCbm").textContent = "0.000 CBM";
+      document.getElementById("kpiQuantity").textContent = "0 Units";
+      document.getElementById("kpiLandedCost").textContent = "KSh 0";
+      document.getElementById("kpiProfit").textContent = "KSh 0";
+      document.getElementById("tableTotalQty").textContent = "0";
+      document.getElementById("tableTotalUsd").textContent = "$0.00";
+      document.getElementById("tableTotalCbm").textContent = "0.000";
 
       addItemRow();
       loadUsdRate();
@@ -803,18 +1219,5 @@
       loadUsdRate();
     });
   </script>
-<div class="container">
-    <div class="card" style="margin-top: 16px;">
-      <h2>Service Fee Guide</h2>
-
-      <div class="result-box"><span>Below KSh 5,000</span><span>Flat KSh 500</span></div>
-      <div class="result-box"><span>KSh 5,001 – 10,000</span><span>10%</span></div>
-      <div class="result-box"><span>KSh 10,001 – 50,000</span><span>7.5%</span></div>
-      <div class="result-box"><span>KSh 50,001 – 100,000</span><span>7%</span></div>
-      <div class="result-box"><span>KSh 100,001 – 300,000</span><span>6%</span></div>
-      <div class="result-box"><span>KSh 300,001 – 500,000</span><span>5%</span></div>
-      <div class="result-box"><span>Above KSh 500,000</span><span>4%</span></div>
-    </div>
-  </div>
 </body>
 </html>
