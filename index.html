@@ -601,6 +601,56 @@
       color: var(--text);
     }
 
+
+    .support-section {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 16px 18px;
+      box-shadow: 0 12px 32px rgba(15, 23, 42, 0.06);
+    }
+
+    .support-section h2 {
+      font-size: 17px;
+      margin-bottom: 6px;
+      color: var(--text);
+    }
+
+    .support-section p {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.5;
+      margin-bottom: 12px;
+    }
+
+    .support-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+
+    .support-card {
+      border: 1px solid var(--line);
+      background: #f8fafc;
+      border-radius: 14px;
+      padding: 14px;
+    }
+
+    .support-card span {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+      margin-bottom: 6px;
+    }
+
+    .support-card a {
+      color: var(--purple);
+      text-decoration: none;
+      font-weight: 900;
+      font-size: 14px;
+    }
+
     .mobile-bottom-nav {
       display: none;
     }
@@ -728,6 +778,10 @@
         grid-template-columns: 1fr;
       }
 
+      .support-grid {
+        grid-template-columns: 1fr;
+      }
+
       .actions-row {
         flex-direction: column;
       }
@@ -776,7 +830,7 @@
           <a href="#summary">Summary</a>
           <a href="#profit">Profit Guide</a>
           <a href="#service-fee">Service Fees</a>
-          <a href="#">Help & Guide</a>
+          <a href="#support">Support</a>
         </nav>
       </div>
 
@@ -1001,6 +1055,28 @@
           <div class="guide-line"><span>KSh 300,001 – 500,000</span><strong>5%</strong></div>
           <div class="guide-line"><span>Above KSh 500,000</span><strong>4%</strong></div>
           <p class="helper-text">Service Fee is calculated from Item Value + Shipping Fee + Factory/Warehouse Delivery Fee.</p>
+        </div>
+      </section>
+
+      <section class="support-section" id="support">
+        <h2>Support & Enquiries</h2>
+        <p>Contact UniCart Imports KE for order support, quotations, shipment follow-ups, and payment assistance.</p>
+
+        <div class="support-grid">
+          <div class="support-card">
+            <span>WhatsApp / Calls</span>
+            <a href="tel:+254728454830">+254 728 454 830</a>
+          </div>
+
+          <div class="support-card">
+            <span>WhatsApp / Calls</span>
+            <a href="tel:+254724063072">+254 724 063 072</a>
+          </div>
+
+          <div class="support-card">
+            <span>Instagram</span>
+            <a href="https://instagram.com/unicart_imports" target="_blank">@unicart_imports</a>
+          </div>
         </div>
       </section>
     </main>
@@ -1472,6 +1548,14 @@
           </thead>
           <tbody>${rows}</tbody>
         </table>
+
+
+        <div style="margin:12px 0 14px;padding:12px;border:1px solid #e2e8f0;border-radius:12px;background:#f8fafc;font-size:11px;color:#475569;line-height:1.6;">
+          <strong style="display:block;color:#07132f;font-size:13px;margin-bottom:4px;">Support & Enquiries</strong>
+          UniCart Imports KE<br>
+          WhatsApp / Calls: +254 728 454 830 &nbsp; | &nbsp; +254 724 063 072<br>
+          Instagram: @unicart_imports
+        </div>
 
         <div style="border-top:1px solid #e2e8f0;padding-top:12px;font-size:11px;color:#64748b;line-height:1.6;">
           <strong style="color:#07132f;">Notes:</strong><br>
