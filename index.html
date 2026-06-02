@@ -1,6 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-8V0FM9VLEB"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-8V0FM9VLEB');
+  </script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Import Cost & Service Fee Calculator</title>
@@ -319,7 +330,7 @@
     table {
       width: 100%;
       border-collapse: collapse;
-      min-width: 860px;
+      min-width: 1180px;
     }
 
     th {
@@ -594,6 +605,25 @@
       display: none;
     }
 
+
+
+    /* Compact desktop spacing */
+    @media (min-width: 1051px) {
+      body { padding: 10px; }
+      .app-shell { gap: 10px; grid-template-columns: 220px 1fr; }
+      .sidebar { padding: 18px 14px; min-height: calc(100vh - 20px); border-radius: 18px; }
+      .main { gap: 10px; }
+      .topbar { padding: 14px 18px; border-radius: 18px; }
+      .kpi-grid { gap: 10px; }
+      .kpi-card { padding: 14px; min-height: 74px; border-radius: 14px; }
+      .card-header, .card-body { padding: 12px 14px; }
+      .summary-card, .profit-card, .payment-card, .service-guide { padding: 14px; }
+      .dashboard-grid, .breakdown-section { gap: 10px; }
+      th, td { padding: 9px 8px; }
+      .result-box { padding: 8px 0; }
+      .total-box, .unit-price-highlight { margin-top: 10px; padding: 12px; }
+    }
+
     @media (max-width: 1050px) {
       .app-shell {
         grid-template-columns: 1fr;
@@ -834,6 +864,9 @@
                   <th>Item Name</th>
                   <th>Unit Price (USD)</th>
                   <th>Qty</th>
+                  <th>Length (cm)</th>
+                  <th>Width (cm)</th>
+                  <th>Height (cm)</th>
                   <th>Total Value (USD)</th>
                   <th>CBM / Unit</th>
                   <th>Total CBM</th>
@@ -846,6 +879,9 @@
                 <tr>
                   <th colspan="3">TOTAL</th>
                   <th id="tableTotalQty">0</th>
+                  <th></th>
+                  <th></th>
+                  <th></th>
                   <th id="tableTotalUsd">$0.00</th>
                   <th></th>
                   <th id="tableTotalCbm">0.000</th>
@@ -882,12 +918,12 @@
             <input type="hidden" id="totalQuantityValue" value="0" />
 
             <p class="helper-text">
-              Enter either Unit Price (USD) or Total Value (USD). If Total Value and Quantity are provided, Unit Price is calculated automatically.
+              Enter Unit Price or Total Value. If Length, Width, and Height are entered, CBM/Unit is calculated automatically.
             </p>
 
             <div class="actions-row">
               <button class="reset-btn" onclick="resetCalculator()" type="button">Clear All</button>
-              <button class="save-btn" type="button">Save Order</button>
+              <button class="save-btn" onclick="downloadOrderPdf()" type="button">Download PDF</button>
               <button class="calculate-btn" onclick="calculateImportCost()" type="button">Calculate</button>
             </div>
           </div>
@@ -1037,14 +1073,30 @@
         <td class="item-name-cell"><input type="text" class="item-name" placeholder="Example: Bag" oninput="updateItemsSummary()" /></td>
         <td><input type="number" class="item-price" placeholder="12.50" step="0.01" oninput="updateItemRow(this, 'unit')" /></td>
         <td><input type="number" class="item-quantity" placeholder="20" oninput="updateItemRow(this, 'quantity')" /></td>
+        <td><input type="number" class="item-length" placeholder="60" step="0.01" oninput="updateItemRow(this, 'dimension')" /></td>
+        <td><input type="number" class="item-width" placeholder="40" step="0.01" oninput="updateItemRow(this, 'dimension')" /></td>
+        <td><input type="number" class="item-height" placeholder="30" step="0.01" oninput="updateItemRow(this, 'dimension')" /></td>
         <td><input type="number" class="item-total-usd" placeholder="250.00" step="0.01" oninput="updateItemRow(this, 'total')" /></td>
-        <td><input type="number" class="item-cbm" placeholder="0.028" step="0.001" oninput="updateItemsSummary()" /></td>
+        <td><input type="number" class="item-cbm" placeholder="Auto" step="0.001" oninput="updateItemsSummary()" /></td>
         <td class="item-total-cbm">0.000</td>
         <td class="item-price-ksh">KSh 0</td>
         <td><button class="remove-item-btn" onclick="removeItemRow(this)" type="button">Remove</button></td>
       `;
       container.appendChild(row);
       updateItemsSummary();
+    }
+
+
+    function calculateCbmFromDimensions(row) {
+      const length = Number(row.querySelector(".item-length").value || 0);
+      const width = Number(row.querySelector(".item-width").value || 0);
+      const height = Number(row.querySelector(".item-height").value || 0);
+      const cbmInput = row.querySelector(".item-cbm");
+
+      if (length > 0 && width > 0 && height > 0) {
+        const cbmPerUnit = (length * width * height) / 1000000;
+        cbmInput.value = cbmPerUnit.toFixed(3);
+      }
     }
 
     function updateItemRow(input, changedField) {
@@ -1057,6 +1109,10 @@
       const quantity = Number(quantityInput.value || 0);
       const totalValue = Number(totalInput.value || 0);
 
+      if (changedField === "dimension") {
+        calculateCbmFromDimensions(row);
+      }
+
       if ((changedField === "unit" || changedField === "quantity") && unitPrice > 0 && quantity > 0) {
         totalInput.value = (unitPrice * quantity).toFixed(2);
       }
@@ -1067,6 +1123,10 @@
 
       if (changedField === "quantity" && totalValue > 0 && unitPrice <= 0 && quantity > 0) {
         priceInput.value = (totalValue / quantity).toFixed(2);
+      }
+
+      if (changedField === "quantity") {
+        calculateCbmFromDimensions(row);
       }
 
       updateItemsSummary();
@@ -1087,6 +1147,9 @@
         const priceUsd = Number(row.querySelector(".item-price").value || 0);
         const quantity = Number(row.querySelector(".item-quantity").value || 0);
         const totalUsdInput = Number(row.querySelector(".item-total-usd").value || 0);
+        const length = Number(row.querySelector(".item-length")?.value || 0);
+        const width = Number(row.querySelector(".item-width")?.value || 0);
+        const height = Number(row.querySelector(".item-height")?.value || 0);
         const cbmPerItem = Number(row.querySelector(".item-cbm").value || 0);
         const totalUsd = totalUsdInput > 0 ? totalUsdInput : priceUsd * quantity;
         const totalCbm = cbmPerItem * quantity;
@@ -1096,7 +1159,7 @@
         row.querySelector(".item-price-ksh").textContent = formatKsh(priceUsd * usdRate);
 
         if (quantity > 0 && (priceUsd > 0 || totalUsd > 0)) {
-          items.push({ name, priceUsd, quantity, totalUsd, cbmPerItem, totalCbm });
+          items.push({ name, priceUsd, quantity, totalUsd, cbmPerItem, totalCbm, length, width, height });
         }
       });
 
@@ -1227,6 +1290,225 @@
       document.getElementById("kpiLandedCost").textContent = formatKsh(totalPayable);
 
       renderItemBreakdown(items, usdRate, shippingPerCbm, warehouseDeliveryFeeKsh, serviceFee.amount, itemValueKsh);
+    }
+
+
+    function escapeHtml(value) {
+      return String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    function getOrderCalculations() {
+      const items = getItemsData();
+      const orderValueUsd = Number(document.getElementById("orderValueUsd").value || 0);
+      const usdRate = Number(document.getElementById("usdRate").value || 0);
+      const totalCbm = Number(document.getElementById("totalCbm").value || 0);
+      const shippingPerCbm = Number(document.getElementById("shippingPerCbm").value || 0);
+      const warehouseDeliveryFeeUsd = Number(document.getElementById("warehouseDeliveryFee").value || 0);
+      const totalQuantity = Number(document.getElementById("totalQuantityValue").value || 0);
+
+      const itemValueKsh = orderValueUsd * usdRate;
+      const shippingFee = totalCbm * shippingPerCbm;
+      const warehouseDeliveryFeeKsh = warehouseDeliveryFeeUsd * usdRate;
+      const serviceFeeBase = itemValueKsh + shippingFee + warehouseDeliveryFeeKsh;
+      const serviceFee = getServiceFee(serviceFeeBase);
+      const totalPayable = serviceFeeBase + serviceFee.amount;
+      const amountPayableNow = totalPayable - shippingFee;
+      const finalUnitPrice = totalQuantity > 0 ? totalPayable / totalQuantity : 0;
+
+      let totalExpectedProfit = 0;
+      const itemBreakdown = items.map((item) => {
+        const itemTotalKsh = item.totalUsd * usdRate;
+        const itemBaseKsh = item.quantity > 0 ? itemTotalKsh / item.quantity : 0;
+        const itemShippingKsh = item.cbmPerItem * shippingPerCbm;
+        const itemShareByValue = itemValueKsh > 0 ? itemTotalKsh / itemValueKsh : 0;
+        const deliverySharePerItem = item.quantity > 0 ? (warehouseDeliveryFeeKsh * itemShareByValue) / item.quantity : 0;
+        const serviceSharePerItem = item.quantity > 0 ? (serviceFee.amount * itemShareByValue) / item.quantity : 0;
+        const landedUnitCost = itemBaseKsh + itemShippingKsh + deliverySharePerItem + serviceSharePerItem;
+        const wholesaleResale = landedUnitCost * 1.35;
+        const retailResale = landedUnitCost * 1.60;
+        const premiumResale = landedUnitCost * 1.85;
+        const profitPerUnit = retailResale - landedUnitCost;
+        const totalProfit = profitPerUnit * item.quantity;
+
+        totalExpectedProfit += totalProfit;
+
+        return {
+          ...item,
+          itemBaseKsh,
+          itemShippingKsh,
+          deliverySharePerItem,
+          serviceSharePerItem,
+          landedUnitCost,
+          wholesaleResale,
+          retailResale,
+          premiumResale,
+          profitPerUnit,
+          totalProfit
+        };
+      });
+
+      return {
+        items,
+        itemBreakdown,
+        orderValueUsd,
+        usdRate,
+        totalCbm,
+        shippingPerCbm,
+        warehouseDeliveryFeeUsd,
+        warehouseDeliveryFeeKsh,
+        totalQuantity,
+        itemValueKsh,
+        shippingFee,
+        serviceFee,
+        totalPayable,
+        amountPayableNow,
+        finalUnitPrice,
+        totalExpectedProfit
+      };
+    }
+
+    function buildPdfDocument(calculations) {
+      const now = new Date();
+      const quotationNo = "UC-" + now.getFullYear() + "" + String(now.getMonth() + 1).padStart(2, "0") + "" + String(now.getDate()).padStart(2, "0") + "-" + String(now.getHours()).padStart(2, "0") + String(now.getMinutes()).padStart(2, "0");
+      const dateText = now.toLocaleDateString("en-KE", {
+        year: "numeric",
+        month: "long",
+        day: "numeric"
+      });
+
+      const rows = calculations.itemBreakdown.map((item, index) => `
+        <tr>
+          <td>${index + 1}</td>
+          <td><strong>${escapeHtml(item.name)}</strong></td>
+          <td>${item.quantity}</td>
+          <td>$${item.priceUsd.toFixed(2)}</td>
+          <td>${item.length > 0 && item.width > 0 && item.height > 0 ? `${item.length} × ${item.width} × ${item.height}` : "-"}</td>
+          <td>${item.cbmPerItem.toFixed(3)}</td>
+          <td>${formatKsh(item.landedUnitCost)}</td>
+          <td><strong>${formatKsh(item.retailResale)}</strong></td>
+          <td>${formatKsh(item.profitPerUnit)}</td>
+          <td>${formatKsh(item.totalProfit)}</td>
+        </tr>
+      `).join("");
+
+      const doc = document.createElement("div");
+      doc.style.width = "794px";
+      doc.style.padding = "34px";
+      doc.style.background = "#ffffff";
+      doc.style.color = "#0f172a";
+      doc.style.fontFamily = "Arial, sans-serif";
+
+      doc.innerHTML = `
+        <div style="display:flex;justify-content:space-between;gap:24px;align-items:flex-start;border-bottom:3px solid #6d28d9;padding-bottom:18px;margin-bottom:22px;">
+          <div>
+            <div style="display:inline-flex;align-items:center;justify-content:center;width:48px;height:48px;border-radius:14px;background:linear-gradient(135deg,#f59e0b,#7c3aed);color:#fff;font-weight:900;letter-spacing:.8px;margin-bottom:10px;">UC</div>
+            <h1 style="font-size:28px;margin:0;color:#07132f;">UniCart Imports KE</h1>
+            <p style="margin:6px 0 0;color:#64748b;font-size:13px;">Import Cost & Resale Pricing Quotation</p>
+          </div>
+          <div style="text-align:right;font-size:12px;color:#475569;line-height:1.8;">
+            <strong style="color:#07132f;font-size:14px;">Quotation</strong><br>
+            No: ${quotationNo}<br>
+            Date: ${dateText}<br>
+            Product: UniCart CargoCalc
+          </div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px;">
+          <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:12px;">
+            <p style="font-size:11px;color:#64748b;margin:0 0 6px;">Total Order Value</p>
+            <h3 style="font-size:16px;margin:0;color:#07132f;">${formatUsd(calculations.orderValueUsd)}</h3>
+          </div>
+          <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:12px;">
+            <p style="font-size:11px;color:#64748b;margin:0 0 6px;">Total CBM</p>
+            <h3 style="font-size:16px;margin:0;color:#07132f;">${calculations.totalCbm.toFixed(3)} CBM</h3>
+          </div>
+          <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:12px;">
+            <p style="font-size:11px;color:#64748b;margin:0 0 6px;">Total Quantity</p>
+            <h3 style="font-size:16px;margin:0;color:#07132f;">${calculations.totalQuantity} Units</h3>
+          </div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:22px;">
+          <div style="border:1px solid #e2e8f0;border-radius:14px;padding:14px;">
+            <h2 style="font-size:16px;margin:0 0 10px;color:#07132f;">Cost Summary</h2>
+            <div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid #e2e8f0;"><span>Item Value</span><strong>${formatKsh(calculations.itemValueKsh)}</strong></div>
+            <div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid #e2e8f0;"><span>Shipping Fee</span><strong>${formatKsh(calculations.shippingFee)}</strong></div>
+            <div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid #e2e8f0;"><span>Factory/Warehouse Delivery</span><strong>${formatKsh(calculations.warehouseDeliveryFeeKsh)}</strong></div>
+            <div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid #e2e8f0;"><span>Service Fee (${calculations.serviceFee.rateText})</span><strong>${formatKsh(calculations.serviceFee.amount)}</strong></div>
+            <div style="display:flex;justify-content:space-between;padding:10px 0 0;font-size:15px;"><span>Total Payable</span><strong>${formatKsh(calculations.totalPayable)}</strong></div>
+          </div>
+
+          <div style="border-radius:14px;padding:14px;background:linear-gradient(135deg,#171048,#07132f);color:white;">
+            <h2 style="font-size:16px;margin:0 0 12px;color:white;">Payment & Profit Summary</h2>
+            <p style="margin:0 0 4px;color:#cbd5e1;font-size:12px;">Amount Payable Now</p>
+            <h3 style="font-size:22px;margin:0 0 12px;color:white;">${formatKsh(calculations.amountPayableNow)}</h3>
+            <p style="margin:0 0 4px;color:#cbd5e1;font-size:12px;">Expected Profit</p>
+            <h3 style="font-size:22px;margin:0;color:#bbf7d0;">${formatKsh(calculations.totalExpectedProfit)}</h3>
+            <p style="margin:12px 0 0;color:#cbd5e1;font-size:11px;line-height:1.5;">Shipping fee is calculated for planning purposes and is paid separately after the goods arrive in Kenya.</p>
+          </div>
+        </div>
+
+        <h2 style="font-size:17px;margin:0 0 10px;color:#07132f;">Order Item Details</h2>
+        <table style="width:100%;border-collapse:collapse;font-size:10.5px;margin-bottom:18px;">
+          <thead>
+            <tr style="background:#f8fafc;color:#475569;">
+              <th style="text-align:left;padding:8px;border:1px solid #e2e8f0;">#</th>
+              <th style="text-align:left;padding:8px;border:1px solid #e2e8f0;">Item</th>
+              <th style="text-align:left;padding:8px;border:1px solid #e2e8f0;">Qty</th>
+              <th style="text-align:left;padding:8px;border:1px solid #e2e8f0;">Supplier</th>
+              <th style="text-align:left;padding:8px;border:1px solid #e2e8f0;">Dimensions</th>
+              <th style="text-align:left;padding:8px;border:1px solid #e2e8f0;">CBM/Unit</th>
+              <th style="text-align:left;padding:8px;border:1px solid #e2e8f0;">Landed Cost</th>
+              <th style="text-align:left;padding:8px;border:1px solid #e2e8f0;">Resale</th>
+              <th style="text-align:left;padding:8px;border:1px solid #e2e8f0;">Profit/Unit</th>
+              <th style="text-align:left;padding:8px;border:1px solid #e2e8f0;">Total Profit</th>
+            </tr>
+          </thead>
+          <tbody>${rows}</tbody>
+        </table>
+
+        <div style="border-top:1px solid #e2e8f0;padding-top:12px;font-size:11px;color:#64748b;line-height:1.6;">
+          <strong style="color:#07132f;">Notes:</strong><br>
+          This quotation is generated by UniCart CargoCalc for planning, pricing, and import cost estimation. Final supplier prices, exchange rates, shipping fees, taxes, and clearance-related charges may vary depending on actual shipment details.
+        </div>
+      `;
+
+      return doc;
+    }
+
+    function downloadOrderPdf() {
+      calculateImportCost(false);
+      const calculations = getOrderCalculations();
+
+      if (!calculations.items.length || calculations.orderValueUsd <= 0 || calculations.usdRate <= 0) {
+        alert("Please add at least one item and confirm the USD rate before downloading the PDF.");
+        return;
+      }
+
+      if (typeof html2pdf === "undefined") {
+        alert("PDF generator is still loading. Please wait a few seconds and try again.");
+        return;
+      }
+
+      const pdfElement = buildPdfDocument(calculations);
+      const dateStamp = new Date().toISOString().slice(0, 10);
+
+      html2pdf()
+        .set({
+          margin: 0,
+          filename: `UniCart-CargoCalc-Quotation-${dateStamp}.pdf`,
+          image: { type: "jpeg", quality: 0.98 },
+          html2canvas: { scale: 2, useCORS: true },
+          jsPDF: { unit: "pt", format: "a4", orientation: "portrait" },
+          pagebreak: { mode: ["avoid-all", "css", "legacy"] }
+        })
+        .from(pdfElement)
+        .save();
     }
 
     function resetCalculator() {
