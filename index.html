@@ -1383,22 +1383,23 @@
 
       const rows = calculations.itemBreakdown.map((item, index) => `
         <tr>
-          <td>${index + 1}</td>
-          <td><strong>${escapeHtml(item.name)}</strong></td>
-          <td>${item.quantity}</td>
-          <td>$${item.priceUsd.toFixed(2)}</td>
-          <td>${item.length > 0 && item.width > 0 && item.height > 0 ? `${item.length} × ${item.width} × ${item.height}` : "-"}</td>
-          <td>${item.cbmPerItem.toFixed(3)}</td>
-          <td>${formatKsh(item.landedUnitCost)}</td>
-          <td><strong>${formatKsh(item.retailResale)}</strong></td>
-          <td>${formatKsh(item.profitPerUnit)}</td>
-          <td>${formatKsh(item.totalProfit)}</td>
+          <td style="padding:5px;border:1px solid #e2e8f0;word-break:break-word;">${index + 1}</td>
+          <td style="padding:5px;border:1px solid #e2e8f0;word-break:break-word;"><strong>${escapeHtml(item.name)}</strong></td>
+          <td style="padding:5px;border:1px solid #e2e8f0;word-break:break-word;">${item.quantity}</td>
+          <td style="padding:5px;border:1px solid #e2e8f0;word-break:break-word;">$${item.priceUsd.toFixed(2)}</td>
+          <td style="padding:5px;border:1px solid #e2e8f0;word-break:break-word;">${item.length > 0 && item.width > 0 && item.height > 0 ? `${item.length} x ${item.width} x ${item.height}` : "-"}</td>
+          <td style="padding:5px;border:1px solid #e2e8f0;word-break:break-word;">${item.cbmPerItem.toFixed(3)}</td>
+          <td style="padding:5px;border:1px solid #e2e8f0;word-break:break-word;">${formatKsh(item.landedUnitCost)}</td>
+          <td style="padding:5px;border:1px solid #e2e8f0;word-break:break-word;"><strong>${formatKsh(item.retailResale)}</strong></td>
+          <td style="padding:5px;border:1px solid #e2e8f0;word-break:break-word;">${formatKsh(item.profitPerUnit)}</td>
+          <td style="padding:5px;border:1px solid #e2e8f0;word-break:break-word;">${formatKsh(item.totalProfit)}</td>
         </tr>
       `).join("");
 
       const doc = document.createElement("div");
-      doc.style.width = "794px";
-      doc.style.padding = "34px";
+      doc.style.width = "1060px";
+      doc.style.padding = "28px";
+      doc.style.boxSizing = "border-box";
       doc.style.background = "#ffffff";
       doc.style.color = "#0f172a";
       doc.style.fontFamily = "Arial, sans-serif";
@@ -1454,19 +1455,19 @@
         </div>
 
         <h2 style="font-size:17px;margin:0 0 10px;color:#07132f;">Order Item Details</h2>
-        <table style="width:100%;border-collapse:collapse;font-size:10.5px;margin-bottom:18px;">
+        <table style="width:100%;table-layout:fixed;border-collapse:collapse;font-size:8.6px;margin-bottom:16px;">
           <thead>
             <tr style="background:#f8fafc;color:#475569;">
-              <th style="text-align:left;padding:8px;border:1px solid #e2e8f0;">#</th>
-              <th style="text-align:left;padding:8px;border:1px solid #e2e8f0;">Item</th>
-              <th style="text-align:left;padding:8px;border:1px solid #e2e8f0;">Qty</th>
-              <th style="text-align:left;padding:8px;border:1px solid #e2e8f0;">Supplier</th>
-              <th style="text-align:left;padding:8px;border:1px solid #e2e8f0;">Dimensions</th>
-              <th style="text-align:left;padding:8px;border:1px solid #e2e8f0;">CBM/Unit</th>
-              <th style="text-align:left;padding:8px;border:1px solid #e2e8f0;">Landed Cost</th>
-              <th style="text-align:left;padding:8px;border:1px solid #e2e8f0;">Resale</th>
-              <th style="text-align:left;padding:8px;border:1px solid #e2e8f0;">Profit/Unit</th>
-              <th style="text-align:left;padding:8px;border:1px solid #e2e8f0;">Total Profit</th>
+              <th style="text-align:left;padding:5px;border:1px solid #e2e8f0;word-break:break-word;">#</th>
+              <th style="text-align:left;padding:5px;border:1px solid #e2e8f0;word-break:break-word;">Item</th>
+              <th style="text-align:left;padding:5px;border:1px solid #e2e8f0;word-break:break-word;">Qty</th>
+              <th style="text-align:left;padding:5px;border:1px solid #e2e8f0;word-break:break-word;">Supplier</th>
+              <th style="text-align:left;padding:5px;border:1px solid #e2e8f0;word-break:break-word;">Dimensions</th>
+              <th style="text-align:left;padding:5px;border:1px solid #e2e8f0;word-break:break-word;">CBM/Unit</th>
+              <th style="text-align:left;padding:5px;border:1px solid #e2e8f0;word-break:break-word;">Landed Cost</th>
+              <th style="text-align:left;padding:5px;border:1px solid #e2e8f0;word-break:break-word;">Resale</th>
+              <th style="text-align:left;padding:5px;border:1px solid #e2e8f0;word-break:break-word;">Profit/Unit</th>
+              <th style="text-align:left;padding:5px;border:1px solid #e2e8f0;word-break:break-word;">Total Profit</th>
             </tr>
           </thead>
           <tbody>${rows}</tbody>
@@ -1500,12 +1501,12 @@
 
       html2pdf()
         .set({
-          margin: 0,
+          margin: 18,
           filename: `UniCart-CargoCalc-Quotation-${dateStamp}.pdf`,
           image: { type: "jpeg", quality: 0.98 },
           html2canvas: { scale: 2, useCORS: true },
-          jsPDF: { unit: "pt", format: "a4", orientation: "portrait" },
-          pagebreak: { mode: ["avoid-all", "css", "legacy"] }
+          jsPDF: { unit: "pt", format: "a4", orientation: "landscape" },
+          pagebreak: { mode: ["css", "legacy"], avoid: [".summary-card", ".pdf-summary-box"] }
         })
         .from(pdfElement)
         .save();
