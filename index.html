@@ -1384,16 +1384,18 @@
       const rows = calculations.itemBreakdown.map((item, index) => {
         const dimensions = item.length > 0 && item.width > 0 && item.height > 0
           ? `${item.length} x ${item.width} x ${item.height} cm`
-          : "-";
+          : "Not provided";
 
         return `
           <tr>
             <td class="pdf-td pdf-center">${index + 1}</td>
-            <td class="pdf-td pdf-item"><strong>${escapeHtml(item.name)}</strong><span>Order item</span></td>
+            <td class="pdf-td pdf-item">
+              <strong>${escapeHtml(item.name)}</strong>
+              <span>Dimensions: ${dimensions}</span>
+              <span>CBM/Unit: ${item.cbmPerItem.toFixed(3)}</span>
+            </td>
             <td class="pdf-td pdf-center">${item.quantity}</td>
             <td class="pdf-td">${formatUsd(item.priceUsd)}</td>
-            <td class="pdf-td">${dimensions}</td>
-            <td class="pdf-td pdf-center">${item.cbmPerItem.toFixed(3)}</td>
             <td class="pdf-td pdf-money">${formatKsh(item.landedUnitCost)}</td>
             <td class="pdf-td pdf-money pdf-resale">${formatKsh(item.retailResale)}</td>
             <td class="pdf-td pdf-profit">${formatKsh(item.profitPerUnit)}</td>
@@ -1402,42 +1404,47 @@
       }).join("");
 
       const doc = document.createElement("div");
-      doc.style.width = "960px";
+      doc.style.width = "720px";
       doc.style.padding = "18px";
       doc.style.boxSizing = "border-box";
       doc.style.background = "#f6f8fc";
       doc.style.color = "#0f172a";
       doc.style.fontFamily = "Arial, sans-serif";
+      doc.style.margin = "0";
+      doc.style.overflow = "visible";
 
       doc.innerHTML = `
         <style>
           .pdf-page {
+            width: 100%;
             background: #f6f8fc;
             color: #0f172a;
             font-family: Arial, sans-serif;
+            overflow: visible;
           }
 
           .pdf-header {
             background: linear-gradient(135deg, #07132f 0%, #171048 62%, #6d28d9 100%);
             color: white;
-            border-radius: 18px;
-            padding: 18px 20px;
+            border-radius: 16px;
+            padding: 18px 18px;
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
-            margin-bottom: 16px;
+            gap: 18px;
+            margin-bottom: 14px;
           }
 
           .pdf-brand {
             display: flex;
-            gap: 14px;
+            gap: 12px;
             align-items: center;
           }
 
           .pdf-logo {
-            width: 48px;
-            height: 48px;
-            border-radius: 16px;
+            width: 46px;
+            height: 46px;
+            border-radius: 15px;
             background: linear-gradient(135deg, #f59e0b, #7c3aed);
             display: flex;
             align-items: center;
@@ -1445,40 +1452,41 @@
             color: white;
             font-weight: 900;
             letter-spacing: 1px;
-            font-size: 17px;
-            box-shadow: 0 12px 22px rgba(0,0,0,0.22);
+            font-size: 16px;
+            flex: 0 0 auto;
           }
 
           .pdf-brand h1 {
             margin: 0;
-            font-size: 25px;
+            font-size: 24px;
             line-height: 1.1;
-            letter-spacing: -0.5px;
+            letter-spacing: -0.4px;
           }
 
           .pdf-brand p {
-            margin: 7px 0 0;
-            font-size: 12px;
+            margin: 6px 0 0;
+            font-size: 11.5px;
             color: #dbeafe;
           }
 
           .pdf-meta {
             text-align: right;
-            font-size: 11px;
+            font-size: 10.5px;
             line-height: 1.7;
             color: #dbeafe;
+            min-width: 175px;
           }
 
           .pdf-meta strong {
             color: white;
             display: block;
-            font-size: 16px;
+            font-size: 15px;
             margin-bottom: 4px;
           }
 
           .pdf-metrics {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
+            grid-template-columns: repeat(2, 1fr);
             gap: 8px;
             margin-bottom: 10px;
           }
@@ -1486,37 +1494,29 @@
           .pdf-metric {
             background: #ffffff;
             border: 1px solid #e2e8f0;
-            border-radius: 14px;
+            border-radius: 12px;
             padding: 10px 12px;
-            box-shadow: 0 8px 18px rgba(15, 23, 42, 0.04);
           }
 
           .pdf-metric span {
             display: block;
             color: #64748b;
-            font-size: 10.5px;
-            margin-bottom: 5px;
+            font-size: 10px;
+            margin-bottom: 4px;
           }
 
           .pdf-metric strong {
             display: block;
             color: #07132f;
-            font-size: 17px;
-          }
-
-          .pdf-grid {
-            display: grid;
-            grid-template-columns: 1.05fr 0.95fr;
-            gap: 10px;
-            margin-bottom: 10px;
+            font-size: 15px;
           }
 
           .pdf-card {
             background: #ffffff;
             border: 1px solid #e2e8f0;
-            border-radius: 16px;
-            padding: 12px 14px;
-            box-shadow: 0 8px 18px rgba(15, 23, 42, 0.04);
+            border-radius: 14px;
+            padding: 13px 14px;
+            margin-bottom: 10px;
           }
 
           .pdf-card.dark {
@@ -1526,9 +1526,9 @@
           }
 
           .pdf-card h2 {
-            margin: 0 0 10px;
+            margin: 0 0 9px;
             color: #07132f;
-            font-size: 16px;
+            font-size: 15px;
           }
 
           .pdf-card.dark h2 {
@@ -1538,10 +1538,10 @@
           .pdf-line {
             display: flex;
             justify-content: space-between;
-            gap: 16px;
+            gap: 14px;
             padding: 5px 0;
             border-bottom: 1px solid #e2e8f0;
-            font-size: 12.5px;
+            font-size: 11.8px;
           }
 
           .pdf-line:last-child {
@@ -1570,41 +1570,43 @@
           }
 
           .pdf-highlight {
-            margin-top: 10px;
+            margin-top: 9px;
             background: rgba(187,247,208,0.12);
             border: 1px solid rgba(187,247,208,0.25);
-            border-radius: 12px;
-            padding: 10px 12px;
+            border-radius: 11px;
+            padding: 9px 10px;
           }
 
           .pdf-highlight small {
             color: #cbd5e1;
             display: block;
-            margin-bottom: 4px;
-            font-size: 10.5px;
+            margin-bottom: 3px;
+            font-size: 10px;
           }
 
           .pdf-highlight strong {
             color: #bbf7d0;
-            font-size: 22px;
+            font-size: 19px;
           }
 
           .pdf-section-title {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            margin: 8px 0 8px;
+            gap: 12px;
+            margin: 10px 0 7px;
           }
 
           .pdf-section-title h2 {
             margin: 0;
-            font-size: 16px;
+            font-size: 15px;
             color: #07132f;
           }
 
           .pdf-section-title span {
             color: #64748b;
-            font-size: 10.5px;
+            font-size: 9.5px;
+            text-align: right;
           }
 
           .pdf-table {
@@ -1614,9 +1616,9 @@
             border-spacing: 0;
             background: white;
             border: 1px solid #e2e8f0;
-            border-radius: 14px;
+            border-radius: 12px;
             overflow: hidden;
-            font-size: 7.8px;
+            font-size: 8.4px;
             margin-bottom: 10px;
           }
 
@@ -1626,10 +1628,10 @@
           }
 
           .pdf-table th {
-            padding: 5px 3px;
+            padding: 6px 4px;
             text-align: left;
             border-right: 1px solid rgba(255,255,255,0.14);
-            font-size: 7.6px;
+            font-size: 8px;
             line-height: 1.15;
           }
 
@@ -1638,12 +1640,12 @@
           }
 
           .pdf-td {
-            padding: 5px 3px;
+            padding: 6px 4px;
             border-top: 1px solid #e2e8f0;
             border-right: 1px solid #e2e8f0;
             vertical-align: top;
             word-break: break-word;
-            line-height: 1.18;
+            line-height: 1.22;
           }
 
           .pdf-td:last-child {
@@ -1661,14 +1663,14 @@
           .pdf-item strong {
             display: block;
             color: #07132f;
-            font-size: 8px;
+            font-size: 8.8px;
           }
 
           .pdf-item span {
             display: block;
             color: #64748b;
-            font-size: 6.7px;
-            margin-top: 1px;
+            font-size: 7.2px;
+            margin-top: 2px;
           }
 
           .pdf-money {
@@ -1688,7 +1690,7 @@
 
           .pdf-support-notes {
             display: grid;
-            grid-template-columns: 0.85fr 1.15fr;
+            grid-template-columns: 1fr 1fr;
             gap: 10px;
             margin-top: 8px;
           }
@@ -1697,10 +1699,10 @@
           .pdf-notes {
             background: #ffffff;
             border: 1px solid #e2e8f0;
-            border-radius: 14px;
+            border-radius: 12px;
             padding: 10px 12px;
-            font-size: 9.5px;
-            line-height: 1.55;
+            font-size: 9px;
+            line-height: 1.5;
             color: #475569;
           }
 
@@ -1708,14 +1710,14 @@
           .pdf-notes strong {
             display: block;
             color: #07132f;
-            font-size: 12px;
+            font-size: 11px;
             margin-bottom: 4px;
           }
 
           .pdf-footer {
-            margin-top: 10px;
+            margin-top: 9px;
             text-align: center;
-            font-size: 9.6px;
+            font-size: 8.8px;
             color: #64748b;
           }
         </style>
@@ -1757,26 +1759,24 @@
             </div>
           </div>
 
-          <div class="pdf-grid">
-            <div class="pdf-card">
-              <h2>Cost Summary</h2>
-              <div class="pdf-line"><span>Item Value</span><strong>${formatKsh(calculations.itemValueKsh)}</strong></div>
-              <div class="pdf-line"><span>Shipping Fee</span><strong>${formatKsh(calculations.shippingFee)}</strong></div>
-              <div class="pdf-line"><span>Warehouse Delivery</span><strong>${formatKsh(calculations.warehouseDeliveryFeeKsh)}</strong></div>
-              <div class="pdf-line"><span>Service Fee (${calculations.serviceFee.rateText})</span><strong>${formatKsh(calculations.serviceFee.amount)}</strong></div>
-              <div class="pdf-line"><span>Total Payable</span><strong>${formatKsh(calculations.totalPayable)}</strong></div>
-            </div>
+          <div class="pdf-card">
+            <h2>Cost Summary</h2>
+            <div class="pdf-line"><span>Item Value</span><strong>${formatKsh(calculations.itemValueKsh)}</strong></div>
+            <div class="pdf-line"><span>Shipping Fee</span><strong>${formatKsh(calculations.shippingFee)}</strong></div>
+            <div class="pdf-line"><span>Warehouse Delivery</span><strong>${formatKsh(calculations.warehouseDeliveryFeeKsh)}</strong></div>
+            <div class="pdf-line"><span>Service Fee (${calculations.serviceFee.rateText})</span><strong>${formatKsh(calculations.serviceFee.amount)}</strong></div>
+            <div class="pdf-line"><span>Total Payable</span><strong>${formatKsh(calculations.totalPayable)}</strong></div>
+          </div>
 
-            <div class="pdf-card dark">
-              <h2>Payment & Profit Summary</h2>
-              <div class="pdf-line"><span>Amount Payable Now</span><strong>${formatKsh(calculations.amountPayableNow)}</strong></div>
-              <div class="pdf-line"><span>Expected Profit</span><strong>${formatKsh(calculations.totalExpectedProfit)}</strong></div>
-              <div class="pdf-line"><span>Final Average Unit Cost</span><strong>${formatKsh(calculations.finalUnitPrice)}</strong></div>
+          <div class="pdf-card dark">
+            <h2>Payment & Profit Summary</h2>
+            <div class="pdf-line"><span>Amount Payable Now</span><strong>${formatKsh(calculations.amountPayableNow)}</strong></div>
+            <div class="pdf-line"><span>Expected Profit</span><strong>${formatKsh(calculations.totalExpectedProfit)}</strong></div>
+            <div class="pdf-line"><span>Final Average Unit Cost</span><strong>${formatKsh(calculations.finalUnitPrice)}</strong></div>
 
-              <div class="pdf-highlight">
-                <small>Payment instruction</small>
-                <strong>Pay now excl. shipping</strong>
-              </div>
+            <div class="pdf-highlight">
+              <small>Payment instruction</small>
+              <strong>Pay now excluding shipping</strong>
             </div>
           </div>
 
@@ -1787,24 +1787,20 @@
 
           <table class="pdf-table">
             <colgroup>
-              <col style="width:4%;">
-              <col style="width:16%;">
               <col style="width:5%;">
-              <col style="width:9%;">
-              <col style="width:13%;">
-              <col style="width:8%;">
-              <col style="width:15%;">
-              <col style="width:15%;">
-              <col style="width:15%;">
+              <col style="width:29%;">
+              <col style="width:7%;">
+              <col style="width:11%;">
+              <col style="width:16%;">
+              <col style="width:16%;">
+              <col style="width:16%;">
             </colgroup>
             <thead>
               <tr>
                 <th>#</th>
-                <th>Item</th>
+                <th>Item Details</th>
                 <th>Qty</th>
                 <th>Supplier</th>
-                <th>Dimensions</th>
-                <th>CBM/Unit</th>
                 <th>Landed Cost</th>
                 <th>Resale Price</th>
                 <th>Profit/Unit</th>
@@ -1837,7 +1833,6 @@
       return doc;
     }
 
-
     function downloadOrderPdf() {
       calculateImportCost(false);
       const calculations = getOrderCalculations();
@@ -1855,45 +1850,23 @@
       const pdfElement = buildPdfDocument(calculations);
       const dateStamp = new Date().toISOString().slice(0, 10);
 
-      /*
-        Important:
-        The previous version used a hidden fixed wrapper. In some browsers,
-        html2canvas fails to capture hidden/fixed wrappers correctly, so the
-        PDF may not generate. This version generates directly from the
-        quotation element and uses a custom landscape page size that matches
-        the quotation width, preventing left/right clipping.
-      */
-      const options = {
-        margin: 0,
-        filename: `UniCart-CargoCalc-Quotation-${dateStamp}.pdf`,
-        image: { type: "jpeg", quality: 1 },
-        html2canvas: {
-          scale: 2,
-          useCORS: true,
-          scrollX: 0,
-          scrollY: 0,
-          backgroundColor: "#f6f8fc",
-          windowWidth: 1120,
-          windowHeight: 792
-        },
-        jsPDF: {
-          unit: "pt",
-          format: [1120, 792],
-          orientation: "landscape"
-        },
-        pagebreak: {
-          mode: ["css", "legacy"],
-          avoid: [".pdf-header", ".pdf-card", ".pdf-support-notes"]
-        }
-      };
-
       html2pdf()
-        .set(options)
+        .set({
+          margin: [8, 8, 8, 8],
+          filename: `UniCart-CargoCalc-Quotation-${dateStamp}.pdf`,
+          image: { type: "jpeg", quality: 0.98 },
+          html2canvas: {
+            scale: 2,
+            useCORS: true,
+            scrollX: 0,
+            scrollY: 0,
+            windowWidth: 720
+          },
+          jsPDF: { unit: "pt", format: "a4", orientation: "portrait" },
+          pagebreak: { mode: ["css", "legacy"], avoid: [".pdf-header", ".pdf-card", ".pdf-support-notes"] }
+        })
         .from(pdfElement)
-        .save()
-        .catch(function () {
-          alert("Unable to generate PDF. Please refresh the page and try again.");
-        });
+        .save();
     }
 
     function resetCalculator() {
