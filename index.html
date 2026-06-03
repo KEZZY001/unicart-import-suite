@@ -1402,8 +1402,8 @@
       }).join("");
 
       const doc = document.createElement("div");
-      doc.style.width = "1080px";
-      doc.style.padding = "24px";
+      doc.style.width = "960px";
+      doc.style.padding = "18px";
       doc.style.boxSizing = "border-box";
       doc.style.background = "#f6f8fc";
       doc.style.color = "#0f172a";
@@ -1421,7 +1421,7 @@
             background: linear-gradient(135deg, #07132f 0%, #171048 62%, #6d28d9 100%);
             color: white;
             border-radius: 18px;
-            padding: 22px 24px;
+            padding: 18px 20px;
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
@@ -1435,8 +1435,8 @@
           }
 
           .pdf-logo {
-            width: 54px;
-            height: 54px;
+            width: 48px;
+            height: 48px;
             border-radius: 16px;
             background: linear-gradient(135deg, #f59e0b, #7c3aed);
             display: flex;
@@ -1451,7 +1451,7 @@
 
           .pdf-brand h1 {
             margin: 0;
-            font-size: 28px;
+            font-size: 25px;
             line-height: 1.1;
             letter-spacing: -0.5px;
           }
@@ -1479,15 +1479,15 @@
           .pdf-metrics {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            gap: 10px;
-            margin-bottom: 14px;
+            gap: 8px;
+            margin-bottom: 10px;
           }
 
           .pdf-metric {
             background: #ffffff;
             border: 1px solid #e2e8f0;
             border-radius: 14px;
-            padding: 12px 14px;
+            padding: 10px 12px;
             box-shadow: 0 8px 18px rgba(15, 23, 42, 0.04);
           }
 
@@ -1507,15 +1507,15 @@
           .pdf-grid {
             display: grid;
             grid-template-columns: 1.05fr 0.95fr;
-            gap: 12px;
-            margin-bottom: 14px;
+            gap: 10px;
+            margin-bottom: 10px;
           }
 
           .pdf-card {
             background: #ffffff;
             border: 1px solid #e2e8f0;
             border-radius: 16px;
-            padding: 14px 16px;
+            padding: 12px 14px;
             box-shadow: 0 8px 18px rgba(15, 23, 42, 0.04);
           }
 
@@ -1539,7 +1539,7 @@
             display: flex;
             justify-content: space-between;
             gap: 16px;
-            padding: 7px 0;
+            padding: 5px 0;
             border-bottom: 1px solid #e2e8f0;
             font-size: 12.5px;
           }
@@ -1616,8 +1616,8 @@
             border: 1px solid #e2e8f0;
             border-radius: 14px;
             overflow: hidden;
-            font-size: 9.4px;
-            margin-bottom: 12px;
+            font-size: 7.8px;
+            margin-bottom: 10px;
           }
 
           .pdf-table thead tr {
@@ -1626,11 +1626,11 @@
           }
 
           .pdf-table th {
-            padding: 8px 6px;
+            padding: 5px 3px;
             text-align: left;
             border-right: 1px solid rgba(255,255,255,0.14);
-            font-size: 9px;
-            line-height: 1.2;
+            font-size: 7.6px;
+            line-height: 1.15;
           }
 
           .pdf-table th:last-child {
@@ -1638,12 +1638,12 @@
           }
 
           .pdf-td {
-            padding: 8px 6px;
+            padding: 5px 3px;
             border-top: 1px solid #e2e8f0;
             border-right: 1px solid #e2e8f0;
             vertical-align: top;
             word-break: break-word;
-            line-height: 1.25;
+            line-height: 1.18;
           }
 
           .pdf-td:last-child {
@@ -1661,14 +1661,14 @@
           .pdf-item strong {
             display: block;
             color: #07132f;
-            font-size: 9.8px;
+            font-size: 8px;
           }
 
           .pdf-item span {
             display: block;
             color: #64748b;
-            font-size: 8px;
-            margin-top: 2px;
+            font-size: 6.7px;
+            margin-top: 1px;
           }
 
           .pdf-money {
@@ -1689,8 +1689,8 @@
           .pdf-support-notes {
             display: grid;
             grid-template-columns: 0.85fr 1.15fr;
-            gap: 12px;
-            margin-top: 10px;
+            gap: 10px;
+            margin-top: 8px;
           }
 
           .pdf-support,
@@ -1698,8 +1698,8 @@
             background: #ffffff;
             border: 1px solid #e2e8f0;
             border-radius: 14px;
-            padding: 12px 14px;
-            font-size: 10.5px;
+            padding: 10px 12px;
+            font-size: 9.5px;
             line-height: 1.55;
             color: #475569;
           }
@@ -1762,7 +1762,7 @@
               <h2>Cost Summary</h2>
               <div class="pdf-line"><span>Item Value</span><strong>${formatKsh(calculations.itemValueKsh)}</strong></div>
               <div class="pdf-line"><span>Shipping Fee</span><strong>${formatKsh(calculations.shippingFee)}</strong></div>
-              <div class="pdf-line"><span>Factory/Warehouse Delivery</span><strong>${formatKsh(calculations.warehouseDeliveryFeeKsh)}</strong></div>
+              <div class="pdf-line"><span>Warehouse Delivery</span><strong>${formatKsh(calculations.warehouseDeliveryFeeKsh)}</strong></div>
               <div class="pdf-line"><span>Service Fee (${calculations.serviceFee.rateText})</span><strong>${formatKsh(calculations.serviceFee.amount)}</strong></div>
               <div class="pdf-line"><span>Total Payable</span><strong>${formatKsh(calculations.totalPayable)}</strong></div>
             </div>
@@ -1774,28 +1774,28 @@
               <div class="pdf-line"><span>Final Average Unit Cost</span><strong>${formatKsh(calculations.finalUnitPrice)}</strong></div>
 
               <div class="pdf-highlight">
-                <small>Recommended payment instruction</small>
-                <strong>Pay now excluding shipping</strong>
+                <small>Payment instruction</small>
+                <strong>Pay now excl. shipping</strong>
               </div>
             </div>
           </div>
 
           <div class="pdf-section-title">
             <h2>Order Item Details</h2>
-            <span>Recommended resale price is calculated from landed unit cost.</span>
+            <span>Resale price is calculated from landed unit cost.</span>
           </div>
 
           <table class="pdf-table">
             <colgroup>
               <col style="width:4%;">
-              <col style="width:17%;">
-              <col style="width:6%;">
-              <col style="width:10%;">
               <col style="width:16%;">
+              <col style="width:5%;">
+              <col style="width:9%;">
+              <col style="width:13%;">
               <col style="width:8%;">
-              <col style="width:13%;">
-              <col style="width:13%;">
-              <col style="width:13%;">
+              <col style="width:15%;">
+              <col style="width:15%;">
+              <col style="width:15%;">
             </colgroup>
             <thead>
               <tr>
@@ -1806,7 +1806,7 @@
                 <th>Dimensions</th>
                 <th>CBM/Unit</th>
                 <th>Landed Cost</th>
-                <th>Recommended Resale</th>
+                <th>Resale Price</th>
                 <th>Profit/Unit</th>
               </tr>
             </thead>
@@ -1857,12 +1857,12 @@
 
       html2pdf()
         .set({
-          margin: 18,
+          margin: 8,
           filename: `UniCart-CargoCalc-Quotation-${dateStamp}.pdf`,
           image: { type: "jpeg", quality: 0.98 },
-          html2canvas: { scale: 2, useCORS: true },
+          html2canvas: { scale: 2, useCORS: true, scrollX: 0, scrollY: 0, windowWidth: 960 },
           jsPDF: { unit: "pt", format: "a4", orientation: "landscape" },
-          pagebreak: { mode: ["css", "legacy"], avoid: [".summary-card", ".pdf-summary-box"] }
+          pagebreak: { mode: ["css", "legacy"], avoid: [".pdf-header", ".pdf-card", ".pdf-support-notes"] }
         })
         .from(pdfElement)
         .save();
