@@ -1382,77 +1382,72 @@
       });
 
       const rows = calculations.itemBreakdown.map((item, index) => {
-        const dimensions = item.length > 0 && item.width > 0 && item.height > 0
-          ? `${item.length} x ${item.width} x ${item.height} cm`
-          : "Not provided";
-
         return `
           <tr>
-            <td class="pdf-td pdf-center">${index + 1}</td>
-            <td class="pdf-td pdf-item">
+            <td>${index + 1}</td>
+            <td>
               <strong>${escapeHtml(item.name)}</strong>
-              <span>Dimensions: ${dimensions}</span>
-              <span>CBM/Unit: ${item.cbmPerItem.toFixed(3)}</span>
+              <small>${item.length > 0 && item.width > 0 && item.height > 0 ? `${item.length} x ${item.width} x ${item.height} cm` : "No dimensions provided"}</small>
             </td>
-            <td class="pdf-td pdf-center">${item.quantity}</td>
-            <td class="pdf-td">${formatUsd(item.priceUsd)}</td>
-            <td class="pdf-td pdf-money">${formatKsh(item.landedUnitCost)}</td>
-            <td class="pdf-td pdf-money pdf-resale">${formatKsh(item.retailResale)}</td>
-            <td class="pdf-td pdf-profit">${formatKsh(item.profitPerUnit)}</td>
+            <td>${item.quantity}</td>
+            <td>${formatUsd(item.priceUsd)}</td>
+            <td>${formatKsh(item.landedUnitCost)}</td>
+            <td class="resale">${formatKsh(item.retailResale)}</td>
+            <td class="profit">${formatKsh(item.profitPerUnit)}</td>
           </tr>
         `;
       }).join("");
 
       const doc = document.createElement("div");
       doc.style.width = "720px";
-      doc.style.padding = "18px";
+      doc.style.padding = "0";
+      doc.style.margin = "0";
       doc.style.boxSizing = "border-box";
-      doc.style.background = "#f6f8fc";
+      doc.style.background = "#ffffff";
       doc.style.color = "#0f172a";
       doc.style.fontFamily = "Arial, sans-serif";
-      doc.style.margin = "0";
-      doc.style.overflow = "visible";
 
       doc.innerHTML = `
         <style>
-          .pdf-page {
-            width: 100%;
-            background: #f6f8fc;
+          .pdf-document {
+            width: 720px;
+            background: #ffffff;
             color: #0f172a;
             font-family: Arial, sans-serif;
-            overflow: visible;
+            box-sizing: border-box;
+            padding: 22px;
           }
 
           .pdf-header {
-            background: linear-gradient(135deg, #07132f 0%, #171048 62%, #6d28d9 100%);
-            color: white;
-            border-radius: 16px;
-            padding: 18px 18px;
+            background: linear-gradient(135deg, #07132f 0%, #171048 60%, #6d28d9 100%);
+            color: #ffffff;
+            border-radius: 18px;
+            padding: 22px;
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
-            gap: 18px;
-            margin-bottom: 14px;
+            gap: 20px;
+            margin-bottom: 16px;
           }
 
           .pdf-brand {
             display: flex;
-            gap: 12px;
             align-items: center;
+            gap: 14px;
           }
 
           .pdf-logo {
-            width: 46px;
-            height: 46px;
-            border-radius: 15px;
+            width: 52px;
+            height: 52px;
+            border-radius: 16px;
             background: linear-gradient(135deg, #f59e0b, #7c3aed);
             display: flex;
             align-items: center;
             justify-content: center;
-            color: white;
+            color: #ffffff;
             font-weight: 900;
             letter-spacing: 1px;
-            font-size: 16px;
+            font-size: 18px;
             flex: 0 0 auto;
           }
 
@@ -1460,88 +1455,88 @@
             margin: 0;
             font-size: 24px;
             line-height: 1.1;
-            letter-spacing: -0.4px;
+            letter-spacing: -0.3px;
           }
 
           .pdf-brand p {
-            margin: 6px 0 0;
-            font-size: 11.5px;
+            margin: 7px 0 0;
+            font-size: 12px;
             color: #dbeafe;
           }
 
           .pdf-meta {
             text-align: right;
-            font-size: 10.5px;
+            font-size: 11px;
             line-height: 1.7;
             color: #dbeafe;
-            min-width: 175px;
+            min-width: 170px;
           }
 
           .pdf-meta strong {
-            color: white;
             display: block;
-            font-size: 15px;
+            color: #ffffff;
+            font-size: 16px;
             margin-bottom: 4px;
           }
 
           .pdf-metrics {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 8px;
-            margin-bottom: 10px;
+            gap: 10px;
+            margin-bottom: 14px;
           }
 
           .pdf-metric {
-            background: #ffffff;
             border: 1px solid #e2e8f0;
-            border-radius: 12px;
-            padding: 10px 12px;
+            background: #f8fafc;
+            border-radius: 14px;
+            padding: 12px 14px;
           }
 
           .pdf-metric span {
             display: block;
             color: #64748b;
-            font-size: 10px;
-            margin-bottom: 4px;
+            font-size: 11px;
+            margin-bottom: 5px;
           }
 
           .pdf-metric strong {
             display: block;
             color: #07132f;
-            font-size: 15px;
+            font-size: 17px;
           }
 
-          .pdf-card {
-            background: #ffffff;
+          .pdf-section {
             border: 1px solid #e2e8f0;
-            border-radius: 14px;
-            padding: 13px 14px;
-            margin-bottom: 10px;
+            border-radius: 16px;
+            padding: 14px 16px;
+            margin-bottom: 14px;
+            background: #ffffff;
           }
 
-          .pdf-card.dark {
+          .pdf-section.dark {
             background: linear-gradient(135deg, #171048, #07132f);
-            border: none;
             color: white;
+            border: none;
           }
 
-          .pdf-card h2 {
-            margin: 0 0 9px;
+          .pdf-section h2 {
+            margin: 0 0 10px;
+            font-size: 16px;
             color: #07132f;
-            font-size: 15px;
           }
 
-          .pdf-card.dark h2 {
+          .pdf-section.dark h2 {
             color: white;
           }
 
           .pdf-line {
             display: flex;
             justify-content: space-between;
-            gap: 14px;
-            padding: 5px 0;
+            gap: 16px;
+            padding: 7px 0;
             border-bottom: 1px solid #e2e8f0;
-            font-size: 11.8px;
+            font-size: 12.5px;
           }
 
           .pdf-line:last-child {
@@ -1557,133 +1552,106 @@
             text-align: right;
           }
 
-          .pdf-card.dark .pdf-line {
-            border-color: rgba(255,255,255,0.14);
+          .pdf-section.dark .pdf-line {
+            border-color: rgba(255,255,255,0.15);
           }
 
-          .pdf-card.dark .pdf-line span {
+          .pdf-section.dark .pdf-line span {
             color: #cbd5e1;
           }
 
-          .pdf-card.dark .pdf-line strong {
-            color: white;
+          .pdf-section.dark .pdf-line strong {
+            color: #ffffff;
           }
 
-          .pdf-highlight {
-            margin-top: 9px;
-            background: rgba(187,247,208,0.12);
-            border: 1px solid rgba(187,247,208,0.25);
-            border-radius: 11px;
-            padding: 9px 10px;
+          .pay-highlight {
+            margin-top: 12px;
+            padding: 12px 14px;
+            border-radius: 14px;
+            background: rgba(187, 247, 208, 0.12);
+            border: 1px solid rgba(187, 247, 208, 0.28);
           }
 
-          .pdf-highlight small {
-            color: #cbd5e1;
+          .pay-highlight small {
             display: block;
-            margin-bottom: 3px;
-            font-size: 10px;
+            color: #cbd5e1;
+            font-size: 10.5px;
+            margin-bottom: 4px;
           }
 
-          .pdf-highlight strong {
+          .pay-highlight strong {
             color: #bbf7d0;
-            font-size: 19px;
+            font-size: 20px;
           }
 
-          .pdf-section-title {
+          .pdf-table-title {
             display: flex;
-            align-items: center;
             justify-content: space-between;
-            gap: 12px;
-            margin: 10px 0 7px;
+            align-items: center;
+            margin: 4px 0 8px;
           }
 
-          .pdf-section-title h2 {
+          .pdf-table-title h2 {
             margin: 0;
-            font-size: 15px;
             color: #07132f;
+            font-size: 16px;
           }
 
-          .pdf-section-title span {
+          .pdf-table-title span {
             color: #64748b;
-            font-size: 9.5px;
-            text-align: right;
+            font-size: 10.5px;
           }
 
           .pdf-table {
             width: 100%;
+            border-collapse: collapse;
             table-layout: fixed;
-            border-collapse: separate;
-            border-spacing: 0;
-            background: white;
             border: 1px solid #e2e8f0;
             border-radius: 12px;
             overflow: hidden;
-            font-size: 8.4px;
-            margin-bottom: 10px;
-          }
-
-          .pdf-table thead tr {
-            background: #07132f;
-            color: white;
+            font-size: 10.5px;
+            margin-bottom: 14px;
           }
 
           .pdf-table th {
-            padding: 6px 4px;
+            background: #07132f;
+            color: white;
+            padding: 8px 6px;
             text-align: left;
-            border-right: 1px solid rgba(255,255,255,0.14);
-            font-size: 8px;
-            line-height: 1.15;
+            font-size: 10px;
+            line-height: 1.2;
           }
 
-          .pdf-table th:last-child {
-            border-right: none;
-          }
-
-          .pdf-td {
-            padding: 6px 4px;
+          .pdf-table td {
+            padding: 8px 6px;
             border-top: 1px solid #e2e8f0;
-            border-right: 1px solid #e2e8f0;
             vertical-align: top;
+            line-height: 1.25;
             word-break: break-word;
-            line-height: 1.22;
           }
 
-          .pdf-td:last-child {
-            border-right: none;
+          .pdf-table td strong {
+            display: block;
+            color: #07132f;
+          }
+
+          .pdf-table td small {
+            display: block;
+            color: #64748b;
+            font-size: 8.8px;
+            margin-top: 2px;
           }
 
           .pdf-table tbody tr:nth-child(even) {
             background: #f8fafc;
           }
 
-          .pdf-center {
-            text-align: center;
-          }
-
-          .pdf-item strong {
-            display: block;
-            color: #07132f;
-            font-size: 8.8px;
-          }
-
-          .pdf-item span {
-            display: block;
-            color: #64748b;
-            font-size: 7.2px;
-            margin-top: 2px;
-          }
-
-          .pdf-money {
-            font-weight: 700;
-            color: #07132f;
-          }
-
-          .pdf-resale {
+          .resale {
             color: #5b21b6;
             font-weight: 900;
           }
 
-          .pdf-profit {
+          .profit {
             color: #16a34a;
             font-weight: 900;
           }
@@ -1691,38 +1659,35 @@
           .pdf-support-notes {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            margin-top: 8px;
+            gap: 12px;
           }
 
-          .pdf-support,
-          .pdf-notes {
-            background: #ffffff;
+          .pdf-info-box {
             border: 1px solid #e2e8f0;
-            border-radius: 12px;
-            padding: 10px 12px;
-            font-size: 9px;
-            line-height: 1.5;
+            background: #f8fafc;
+            border-radius: 14px;
+            padding: 12px 14px;
+            font-size: 11px;
+            line-height: 1.55;
             color: #475569;
           }
 
-          .pdf-support strong,
-          .pdf-notes strong {
+          .pdf-info-box strong {
             display: block;
             color: #07132f;
-            font-size: 11px;
-            margin-bottom: 4px;
+            font-size: 12.5px;
+            margin-bottom: 5px;
           }
 
           .pdf-footer {
-            margin-top: 9px;
+            margin-top: 14px;
             text-align: center;
-            font-size: 8.8px;
             color: #64748b;
+            font-size: 10px;
           }
         </style>
 
-        <div class="pdf-page">
+        <div class="pdf-document">
           <div class="pdf-header">
             <div class="pdf-brand">
               <div class="pdf-logo">UC</div>
@@ -1759,7 +1724,7 @@
             </div>
           </div>
 
-          <div class="pdf-card">
+          <div class="pdf-section">
             <h2>Cost Summary</h2>
             <div class="pdf-line"><span>Item Value</span><strong>${formatKsh(calculations.itemValueKsh)}</strong></div>
             <div class="pdf-line"><span>Shipping Fee</span><strong>${formatKsh(calculations.shippingFee)}</strong></div>
@@ -1768,37 +1733,36 @@
             <div class="pdf-line"><span>Total Payable</span><strong>${formatKsh(calculations.totalPayable)}</strong></div>
           </div>
 
-          <div class="pdf-card dark">
+          <div class="pdf-section dark">
             <h2>Payment & Profit Summary</h2>
             <div class="pdf-line"><span>Amount Payable Now</span><strong>${formatKsh(calculations.amountPayableNow)}</strong></div>
             <div class="pdf-line"><span>Expected Profit</span><strong>${formatKsh(calculations.totalExpectedProfit)}</strong></div>
             <div class="pdf-line"><span>Final Average Unit Cost</span><strong>${formatKsh(calculations.finalUnitPrice)}</strong></div>
-
-            <div class="pdf-highlight">
+            <div class="pay-highlight">
               <small>Payment instruction</small>
               <strong>Pay now excluding shipping</strong>
             </div>
           </div>
 
-          <div class="pdf-section-title">
+          <div class="pdf-table-title">
             <h2>Order Item Details</h2>
-            <span>Resale price is calculated from landed unit cost.</span>
+            <span>Recommended resale price is calculated from landed unit cost.</span>
           </div>
 
           <table class="pdf-table">
             <colgroup>
               <col style="width:5%;">
-              <col style="width:29%;">
-              <col style="width:7%;">
-              <col style="width:11%;">
-              <col style="width:16%;">
-              <col style="width:16%;">
-              <col style="width:16%;">
+              <col style="width:25%;">
+              <col style="width:8%;">
+              <col style="width:14%;">
+              <col style="width:17%;">
+              <col style="width:17%;">
+              <col style="width:14%;">
             </colgroup>
             <thead>
               <tr>
                 <th>#</th>
-                <th>Item Details</th>
+                <th>Item</th>
                 <th>Qty</th>
                 <th>Supplier</th>
                 <th>Landed Cost</th>
@@ -1810,7 +1774,7 @@
           </table>
 
           <div class="pdf-support-notes">
-            <div class="pdf-support">
+            <div class="pdf-info-box">
               <strong>Support & Enquiries</strong>
               UniCart Imports KE<br>
               WhatsApp / Calls: +254 728 454 830<br>
@@ -1818,7 +1782,7 @@
               Instagram: @unicart_imports
             </div>
 
-            <div class="pdf-notes">
+            <div class="pdf-info-box">
               <strong>Important Notes</strong>
               This quotation is generated by UniCart CargoCalc for planning, pricing, and import cost estimation. Final supplier prices, exchange rates, shipping fees, taxes, and clearance-related charges may vary depending on actual shipment details. Shipping fee is calculated for planning purposes and is paid separately after the goods arrive in Kenya.
             </div>
@@ -1832,6 +1796,7 @@
 
       return doc;
     }
+
 
     function downloadOrderPdf() {
       calculateImportCost(false);
@@ -1852,7 +1817,7 @@
 
       html2pdf()
         .set({
-          margin: [8, 8, 8, 8],
+          margin: [12, 12, 12, 12],
           filename: `UniCart-CargoCalc-Quotation-${dateStamp}.pdf`,
           image: { type: "jpeg", quality: 0.98 },
           html2canvas: {
@@ -1862,8 +1827,15 @@
             scrollY: 0,
             windowWidth: 720
           },
-          jsPDF: { unit: "pt", format: "a4", orientation: "portrait" },
-          pagebreak: { mode: ["css", "legacy"], avoid: [".pdf-header", ".pdf-card", ".pdf-support-notes"] }
+          jsPDF: {
+            unit: "pt",
+            format: "a4",
+            orientation: "portrait"
+          },
+          pagebreak: {
+            mode: ["css", "legacy"],
+            avoid: [".pdf-header", ".pdf-section", ".pdf-support-notes"]
+          }
         })
         .from(pdfElement)
         .save();
