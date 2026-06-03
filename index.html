@@ -1402,8 +1402,9 @@
       }).join("");
 
       const doc = document.createElement("div");
-      doc.style.width = "960px";
-      doc.style.padding = "18px";
+      doc.style.width = "1120px";
+      doc.style.minHeight = "792px";
+      doc.style.padding = "24px";
       doc.style.boxSizing = "border-box";
       doc.style.background = "#f6f8fc";
       doc.style.color = "#0f172a";
@@ -1616,7 +1617,7 @@
             border: 1px solid #e2e8f0;
             border-radius: 14px;
             overflow: hidden;
-            font-size: 7.8px;
+            font-size: 8.4px;
             margin-bottom: 10px;
           }
 
@@ -1629,7 +1630,7 @@
             padding: 5px 3px;
             text-align: left;
             border-right: 1px solid rgba(255,255,255,0.14);
-            font-size: 7.6px;
+            font-size: 8.4px;
             line-height: 1.15;
           }
 
@@ -1661,13 +1662,13 @@
           .pdf-item strong {
             display: block;
             color: #07132f;
-            font-size: 8px;
+            font-size: 8.4px;
           }
 
           .pdf-item span {
             display: block;
             color: #64748b;
-            font-size: 6.7px;
+            font-size: 7px;
             margin-top: 1px;
           }
 
@@ -1788,14 +1789,14 @@
           <table class="pdf-table">
             <colgroup>
               <col style="width:4%;">
-              <col style="width:16%;">
+              <col style="width:18%;">
               <col style="width:5%;">
               <col style="width:9%;">
-              <col style="width:13%;">
+              <col style="width:15%;">
               <col style="width:8%;">
-              <col style="width:15%;">
-              <col style="width:15%;">
-              <col style="width:15%;">
+              <col style="width:14%;">
+              <col style="width:14%;">
+              <col style="width:13%;">
             </colgroup>
             <thead>
               <tr>
@@ -1855,17 +1856,55 @@
       const pdfElement = buildPdfDocument(calculations);
       const dateStamp = new Date().toISOString().slice(0, 10);
 
+      const pdfWrapper = document.createElement("div");
+      pdfWrapper.style.position = "fixed";
+      pdfWrapper.style.left = "0";
+      pdfWrapper.style.top = "0";
+      pdfWrapper.style.width = "1120px";
+      pdfWrapper.style.minHeight = "792px";
+      pdfWrapper.style.background = "#f6f8fc";
+      pdfWrapper.style.zIndex = "-1";
+      pdfWrapper.style.overflow = "hidden";
+      pdfWrapper.appendChild(pdfElement);
+      document.body.appendChild(pdfWrapper);
+
+      const options = {
+        margin: 0,
+        filename: `UniCart-CargoCalc-Quotation-${dateStamp}.pdf`,
+        image: { type: "jpeg", quality: 1 },
+        html2canvas: {
+          scale: 2,
+          useCORS: true,
+          scrollX: 0,
+          scrollY: 0,
+          windowWidth: 1120,
+          windowHeight: 792,
+          backgroundColor: "#f6f8fc"
+        },
+        jsPDF: {
+          unit: "px",
+          format: [1120, 792],
+          orientation: "landscape"
+        },
+        pagebreak: {
+          mode: ["css", "legacy"],
+          avoid: [".pdf-header", ".pdf-card", ".pdf-support-notes"]
+        }
+      };
+
       html2pdf()
-        .set({
-          margin: 8,
-          filename: `UniCart-CargoCalc-Quotation-${dateStamp}.pdf`,
-          image: { type: "jpeg", quality: 0.98 },
-          html2canvas: { scale: 2, useCORS: true, scrollX: 0, scrollY: 0, windowWidth: 960 },
-          jsPDF: { unit: "pt", format: "a4", orientation: "landscape" },
-          pagebreak: { mode: ["css", "legacy"], avoid: [".pdf-header", ".pdf-card", ".pdf-support-notes"] }
+        .set(options)
+        .from(pdfWrapper)
+        .save()
+        .then(() => {
+          document.body.removeChild(pdfWrapper);
         })
-        .from(pdfElement)
-        .save();
+        .catch(() => {
+          if (document.body.contains(pdfWrapper)) {
+            document.body.removeChild(pdfWrapper);
+          }
+          alert("Unable to generate PDF. Please try again.");
+        });
     }
 
     function resetCalculator() {
