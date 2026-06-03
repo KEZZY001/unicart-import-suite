@@ -12,6 +12,8 @@
   </script>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Import Cost & Service Fee Calculator</title>
@@ -1382,18 +1384,14 @@
       });
 
       const rows = calculations.itemBreakdown.map((item, index) => {
-        const dimensions = item.length > 0 && item.width > 0 && item.height > 0
-          ? `${item.length} × ${item.width} × ${item.height} cm`
-          : "Dimensions not provided";
-
         return `
           <tr>
-            <td class="center">${index + 1}</td>
+            <td>${index + 1}</td>
             <td>
               <strong>${escapeHtml(item.name)}</strong>
-              <small>${dimensions}</small>
+              <small>${item.length > 0 && item.width > 0 && item.height > 0 ? `${item.length} x ${item.width} x ${item.height} cm` : "No dimensions provided"}</small>
             </td>
-            <td class="center">${item.quantity}</td>
+            <td>${item.quantity}</td>
             <td>${formatUsd(item.priceUsd)}</td>
             <td>${formatKsh(item.landedUnitCost)}</td>
             <td class="resale">${formatKsh(item.retailResale)}</td>
@@ -1403,22 +1401,23 @@
       }).join("");
 
       const doc = document.createElement("div");
-      doc.style.width = "794px";
+      doc.style.width = "720px";
+      doc.style.padding = "0";
+      doc.style.margin = "0";
+      doc.style.boxSizing = "border-box";
       doc.style.background = "#ffffff";
       doc.style.color = "#0f172a";
       doc.style.fontFamily = "Arial, sans-serif";
-      doc.style.boxSizing = "border-box";
 
       doc.innerHTML = `
         <style>
           .pdf-document {
-            width: 794px;
-            min-height: 1123px;
+            width: 720px;
             background: #ffffff;
             color: #0f172a;
             font-family: Arial, sans-serif;
             box-sizing: border-box;
-            padding: 30px;
+            padding: 22px;
           }
 
           .pdf-header {
@@ -1430,14 +1429,13 @@
             justify-content: space-between;
             align-items: flex-start;
             gap: 20px;
-            margin-bottom: 18px;
+            margin-bottom: 16px;
           }
 
           .pdf-brand {
             display: flex;
             align-items: center;
             gap: 14px;
-            min-width: 0;
           }
 
           .pdf-logo {
@@ -1457,10 +1455,9 @@
 
           .pdf-brand h1 {
             margin: 0;
-            font-size: 25px;
+            font-size: 24px;
             line-height: 1.1;
             letter-spacing: -0.3px;
-            white-space: nowrap;
           }
 
           .pdf-brand p {
@@ -1474,7 +1471,7 @@
             font-size: 11px;
             line-height: 1.7;
             color: #dbeafe;
-            min-width: 180px;
+            min-width: 170px;
           }
 
           .pdf-meta strong {
@@ -1517,7 +1514,6 @@
             padding: 14px 16px;
             margin-bottom: 14px;
             background: #ffffff;
-            page-break-inside: avoid;
           }
 
           .pdf-section.dark {
@@ -1594,7 +1590,6 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            gap: 16px;
             margin: 4px 0 8px;
           }
 
@@ -1607,7 +1602,6 @@
           .pdf-table-title span {
             color: #64748b;
             font-size: 10.5px;
-            text-align: right;
           }
 
           .pdf-table {
@@ -1619,7 +1613,6 @@
             overflow: hidden;
             font-size: 10.5px;
             margin-bottom: 14px;
-            page-break-inside: auto;
           }
 
           .pdf-table th {
@@ -1639,10 +1632,6 @@
             word-break: break-word;
           }
 
-          .pdf-table tr {
-            page-break-inside: avoid;
-          }
-
           .pdf-table td strong {
             display: block;
             color: #07132f;
@@ -1659,10 +1648,6 @@
             background: #f8fafc;
           }
 
-          .center {
-            text-align: center;
-          }
-
           .resale {
             color: #5b21b6;
             font-weight: 900;
@@ -1677,7 +1662,6 @@
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 12px;
-            page-break-inside: avoid;
           }
 
           .pdf-info-box {
@@ -1770,12 +1754,12 @@
           <table class="pdf-table">
             <colgroup>
               <col style="width:5%;">
-              <col style="width:26%;">
+              <col style="width:25%;">
               <col style="width:8%;">
               <col style="width:14%;">
               <col style="width:17%;">
               <col style="width:17%;">
-              <col style="width:13%;">
+              <col style="width:14%;">
             </colgroup>
             <thead>
               <tr>
@@ -1824,55 +1808,252 @@
         return;
       }
 
-      if (typeof html2pdf === "undefined") {
+      if (!window.jspdf || !window.jspdf.jsPDF) {
         alert("PDF generator is still loading. Please wait a few seconds and try again.");
         return;
       }
 
-      const pdfElement = buildPdfDocument(calculations);
-      const dateStamp = new Date().toISOString().slice(0, 10);
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF({
+        orientation: "portrait",
+        unit: "mm",
+        format: "a4"
+      });
 
-      const renderWrapper = document.createElement("div");
-      renderWrapper.style.position = "absolute";
-      renderWrapper.style.left = "0";
-      renderWrapper.style.top = "0";
-      renderWrapper.style.width = "794px";
-      renderWrapper.style.background = "#ffffff";
-      renderWrapper.style.zIndex = "-1";
-      renderWrapper.appendChild(pdfElement);
-      document.body.appendChild(renderWrapper);
+      const pageWidth = doc.internal.pageSize.getWidth();
+      const margin = 14;
+      const contentWidth = pageWidth - margin * 2;
+      const now = new Date();
+      const dateStamp = now.toISOString().slice(0, 10);
+      const quotationNo = "UC-" + now.getFullYear() + String(now.getMonth() + 1).padStart(2, "0") + String(now.getDate()).padStart(2, "0") + "-" + String(now.getHours()).padStart(2, "0") + String(now.getMinutes()).padStart(2, "0");
+      const dateText = now.toLocaleDateString("en-KE", {
+        year: "numeric",
+        month: "long",
+        day: "numeric"
+      });
 
-      html2pdf()
-        .set({
-          margin: 0,
-          filename: `UniCart-CargoCalc-Quotation-${dateStamp}.pdf`,
-          image: { type: "jpeg", quality: 1 },
-          html2canvas: {
-            scale: 2,
-            useCORS: true,
-            scrollX: 0,
-            scrollY: 0,
-            windowWidth: 794
-          },
-          jsPDF: {
-            unit: "px",
-            format: [794, 1123],
-            orientation: "portrait"
-          },
-          pagebreak: {
-            mode: ["css", "legacy"],
-            avoid: [".pdf-header", ".pdf-section", ".pdf-support-notes"]
-          }
-        })
-        .from(pdfElement)
-        .save()
-        .then(() => {
-          document.body.removeChild(renderWrapper);
-        })
-        .catch(() => {
-          document.body.removeChild(renderWrapper);
-          alert("The PDF could not be generated. Please try again.");
-        });
+      function addRoundedRect(x, y, w, h, color) {
+        doc.setFillColor(color[0], color[1], color[2]);
+        doc.roundedRect(x, y, w, h, 3, 3, "F");
+      }
+
+      function addLabelValue(label, value, x, y, w) {
+        doc.setTextColor(100, 116, 139);
+        doc.setFontSize(8);
+        doc.setFont("helvetica", "normal");
+        doc.text(label, x + 4, y + 6);
+
+        doc.setTextColor(7, 19, 47);
+        doc.setFontSize(11);
+        doc.setFont("helvetica", "bold");
+        doc.text(value, x + 4, y + 14, { maxWidth: w - 8 });
+      }
+
+      // Header
+      addRoundedRect(margin, 12, contentWidth, 32, [7, 19, 47]);
+      doc.setFillColor(109, 40, 217);
+      doc.roundedRect(pageWidth - margin - 45, 12, 45, 32, 3, 3, "F");
+
+      doc.setFillColor(245, 158, 11);
+      doc.roundedRect(margin + 5, 18, 16, 16, 4, 4, "F");
+      doc.setTextColor(255, 255, 255);
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(10);
+      doc.text("UC", margin + 9, 28);
+
+      doc.setFontSize(18);
+      doc.text("UniCart Imports KE", margin + 26, 25);
+      doc.setFontSize(8.5);
+      doc.setFont("helvetica", "normal");
+      doc.text("Import Cost & Resale Pricing Quotation", margin + 26, 32);
+
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(10);
+      doc.text("Quotation", pageWidth - margin - 8, 21, { align: "right" });
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(7.5);
+      doc.text(`No: ${quotationNo}`, pageWidth - margin - 8, 27, { align: "right" });
+      doc.text(`Date: ${dateText}`, pageWidth - margin - 8, 32, { align: "right" });
+      doc.text("Product: UniCart CargoCalc", pageWidth - margin - 8, 37, { align: "right" });
+
+      // KPI cards
+      const cardGap = 4;
+      const cardW = (contentWidth - cardGap) / 2;
+      let y = 50;
+
+      addRoundedRect(margin, y, cardW, 20, [248, 250, 252]);
+      addLabelValue("Total Order Value", formatUsd(calculations.orderValueUsd), margin, y, cardW);
+
+      addRoundedRect(margin + cardW + cardGap, y, cardW, 20, [248, 250, 252]);
+      addLabelValue("Total CBM", `${calculations.totalCbm.toFixed(3)} CBM`, margin + cardW + cardGap, y, cardW);
+
+      y += 24;
+
+      addRoundedRect(margin, y, cardW, 20, [248, 250, 252]);
+      addLabelValue("Total Quantity", `${calculations.totalQuantity} Units`, margin, y, cardW);
+
+      addRoundedRect(margin + cardW + cardGap, y, cardW, 20, [248, 250, 252]);
+      addLabelValue("USD Rate Used", `${calculations.usdRate.toFixed(2)} KSh`, margin + cardW + cardGap, y, cardW);
+
+      // Cost Summary
+      y += 30;
+      doc.setTextColor(7, 19, 47);
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(13);
+      doc.text("Cost Summary", margin, y);
+
+      const costRows = [
+        ["Item Value", formatKsh(calculations.itemValueKsh)],
+        ["Shipping Fee", formatKsh(calculations.shippingFee)],
+        ["Factory/Warehouse Delivery", formatKsh(calculations.warehouseDeliveryFeeKsh)],
+        [`Service Fee (${calculations.serviceFee.rateText})`, formatKsh(calculations.serviceFee.amount)],
+        ["Total Payable", formatKsh(calculations.totalPayable)]
+      ];
+
+      doc.autoTable({
+        startY: y + 4,
+        body: costRows,
+        theme: "plain",
+        margin: { left: margin, right: margin },
+        styles: {
+          font: "helvetica",
+          fontSize: 9.5,
+          cellPadding: 2.6,
+          lineColor: [226, 232, 240],
+          lineWidth: 0.1
+        },
+        columnStyles: {
+          0: { textColor: [100, 116, 139] },
+          1: { halign: "right", fontStyle: "bold", textColor: [7, 19, 47] }
+        }
+      });
+
+      // Payment Summary
+      y = doc.lastAutoTable.finalY + 10;
+      addRoundedRect(margin, y, contentWidth, 39, [7, 19, 47]);
+
+      doc.setTextColor(255, 255, 255);
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(13);
+      doc.text("Payment & Profit Summary", margin + 5, y + 8);
+
+      doc.setFontSize(8);
+      doc.setFont("helvetica", "normal");
+      doc.setTextColor(203, 213, 225);
+      doc.text("Amount Payable Now", margin + 5, y + 17);
+      doc.text("Expected Profit", margin + 5, y + 25);
+      doc.text("Final Average Unit Cost", margin + 5, y + 33);
+
+      doc.setFont("helvetica", "bold");
+      doc.setTextColor(255, 255, 255);
+      doc.text(formatKsh(calculations.amountPayableNow), pageWidth - margin - 5, y + 17, { align: "right" });
+      doc.setTextColor(187, 247, 208);
+      doc.text(formatKsh(calculations.totalExpectedProfit), pageWidth - margin - 5, y + 25, { align: "right" });
+      doc.setTextColor(255, 255, 255);
+      doc.text(formatKsh(calculations.finalUnitPrice), pageWidth - margin - 5, y + 33, { align: "right" });
+
+      // Order table
+      y += 49;
+      doc.setTextColor(7, 19, 47);
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(13);
+      doc.text("Order Item Details", margin, y);
+
+      doc.setTextColor(100, 116, 139);
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(7.5);
+      doc.text("Recommended resale price is calculated from landed unit cost.", pageWidth - margin, y, { align: "right" });
+
+      const itemRows = calculations.itemBreakdown.map((item, index) => {
+        const dimensions = item.length > 0 && item.width > 0 && item.height > 0
+          ? `${item.length} x ${item.width} x ${item.height} cm`
+          : "-";
+
+        return [
+          index + 1,
+          `${item.name}
+${dimensions}`,
+          item.quantity,
+          formatUsd(item.priceUsd),
+          formatKsh(item.landedUnitCost),
+          formatKsh(item.retailResale),
+          formatKsh(item.profitPerUnit)
+        ];
+      });
+
+      doc.autoTable({
+        startY: y + 5,
+        head: [["#", "Item", "Qty", "Supplier", "Landed Cost", "Resale Price", "Profit/Unit"]],
+        body: itemRows,
+        theme: "grid",
+        margin: { left: margin, right: margin },
+        headStyles: {
+          fillColor: [7, 19, 47],
+          textColor: [255, 255, 255],
+          fontStyle: "bold",
+          fontSize: 8,
+          cellPadding: 2.4
+        },
+        bodyStyles: {
+          fontSize: 8,
+          cellPadding: 2.5,
+          textColor: [15, 23, 42],
+          lineColor: [226, 232, 240],
+          lineWidth: 0.1
+        },
+        alternateRowStyles: {
+          fillColor: [248, 250, 252]
+        },
+        columnStyles: {
+          0: { cellWidth: 9, halign: "center" },
+          1: { cellWidth: 48 },
+          2: { cellWidth: 13, halign: "center" },
+          3: { cellWidth: 25 },
+          4: { cellWidth: 34 },
+          5: { cellWidth: 34, fontStyle: "bold", textColor: [91, 33, 182] },
+          6: { cellWidth: 28, fontStyle: "bold", textColor: [22, 163, 74] }
+        }
+      });
+
+      y = doc.lastAutoTable.finalY + 10;
+
+      // Support and notes
+      const boxW = (contentWidth - 6) / 2;
+      const boxH = 38;
+
+      addRoundedRect(margin, y, boxW, boxH, [248, 250, 252]);
+      addRoundedRect(margin + boxW + 6, y, boxW, boxH, [248, 250, 252]);
+
+      doc.setTextColor(7, 19, 47);
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(9);
+      doc.text("Support & Enquiries", margin + 4, y + 7);
+      doc.text("Important Notes", margin + boxW + 10, y + 7);
+
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(7.3);
+      doc.setTextColor(71, 85, 105);
+
+      doc.text([
+        "UniCart Imports KE",
+        "WhatsApp / Calls: +254 728 454 830",
+        "WhatsApp / Calls: +254 724 063 072",
+        "Instagram: @unicart_imports"
+      ], margin + 4, y + 14, { maxWidth: boxW - 8, lineHeightFactor: 1.35 });
+
+      doc.text(
+        "This quotation is generated by UniCart CargoCalc for planning, pricing, and import cost estimation. Final supplier prices, exchange rates, shipping fees, taxes, and clearance-related charges may vary depending on actual shipment details. Shipping fee is calculated for planning purposes and is paid separately after the goods arrive in Kenya.",
+        margin + boxW + 10,
+        y + 14,
+        { maxWidth: boxW - 12, lineHeightFactor: 1.35 }
+      );
+
+      // Footer
+      doc.setTextColor(100, 116, 139);
+      doc.setFontSize(7.5);
+      doc.text("Generated by UniCart CargoCalc - UniCart Imports KE", pageWidth / 2, 287, { align: "center" });
+
+      doc.save(`UniCart-CargoCalc-Quotation-${dateStamp}.pdf`);
     }
 
 
