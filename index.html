@@ -601,56 +601,6 @@
       color: var(--text);
     }
 
-
-    .support-section {
-      background: var(--card);
-      border: 1px solid var(--line);
-      border-radius: 18px;
-      padding: 16px 18px;
-      box-shadow: 0 12px 32px rgba(15, 23, 42, 0.06);
-    }
-
-    .support-section h2 {
-      font-size: 17px;
-      margin-bottom: 6px;
-      color: var(--text);
-    }
-
-    .support-section p {
-      color: var(--muted);
-      font-size: 13px;
-      line-height: 1.5;
-      margin-bottom: 12px;
-    }
-
-    .support-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 12px;
-    }
-
-    .support-card {
-      border: 1px solid var(--line);
-      background: #f8fafc;
-      border-radius: 14px;
-      padding: 14px;
-    }
-
-    .support-card span {
-      display: block;
-      color: var(--muted);
-      font-size: 12px;
-      font-weight: 800;
-      margin-bottom: 6px;
-    }
-
-    .support-card a {
-      color: var(--purple);
-      text-decoration: none;
-      font-weight: 900;
-      font-size: 14px;
-    }
-
     .mobile-bottom-nav {
       display: none;
     }
@@ -778,10 +728,6 @@
         grid-template-columns: 1fr;
       }
 
-      .support-grid {
-        grid-template-columns: 1fr;
-      }
-
       .actions-row {
         flex-direction: column;
       }
@@ -830,7 +776,7 @@
           <a href="#summary">Summary</a>
           <a href="#profit">Profit Guide</a>
           <a href="#service-fee">Service Fees</a>
-          <a href="#support">Support</a>
+          <a href="#">Help & Guide</a>
         </nav>
       </div>
 
@@ -1055,28 +1001,6 @@
           <div class="guide-line"><span>KSh 300,001 – 500,000</span><strong>5%</strong></div>
           <div class="guide-line"><span>Above KSh 500,000</span><strong>4%</strong></div>
           <p class="helper-text">Service Fee is calculated from Item Value + Shipping Fee + Factory/Warehouse Delivery Fee.</p>
-        </div>
-      </section>
-
-      <section class="support-section" id="support">
-        <h2>Support & Enquiries</h2>
-        <p>Contact UniCart Imports KE for order support, quotations, shipment follow-ups, and payment assistance.</p>
-
-        <div class="support-grid">
-          <div class="support-card">
-            <span>WhatsApp / Calls</span>
-            <a href="tel:+254728454830">+254 728 454 830</a>
-          </div>
-
-          <div class="support-card">
-            <span>WhatsApp / Calls</span>
-            <a href="tel:+254724063072">+254 724 063 072</a>
-          </div>
-
-          <div class="support-card">
-            <span>Instagram</span>
-            <a href="https://instagram.com/unicart_imports" target="_blank">@unicart_imports</a>
-          </div>
         </div>
       </section>
     </main>
@@ -1457,114 +1381,462 @@
         day: "numeric"
       });
 
-      const rows = calculations.itemBreakdown.map((item, index) => `
-        <tr>
-          <td style="padding:5px;border:1px solid #e2e8f0;word-break:break-word;">${index + 1}</td>
-          <td style="padding:5px;border:1px solid #e2e8f0;word-break:break-word;"><strong>${escapeHtml(item.name)}</strong></td>
-          <td style="padding:5px;border:1px solid #e2e8f0;word-break:break-word;">${item.quantity}</td>
-          <td style="padding:5px;border:1px solid #e2e8f0;word-break:break-word;">$${item.priceUsd.toFixed(2)}</td>
-          <td style="padding:5px;border:1px solid #e2e8f0;word-break:break-word;">${item.length > 0 && item.width > 0 && item.height > 0 ? `${item.length} x ${item.width} x ${item.height}` : "-"}</td>
-          <td style="padding:5px;border:1px solid #e2e8f0;word-break:break-word;">${item.cbmPerItem.toFixed(3)}</td>
-          <td style="padding:5px;border:1px solid #e2e8f0;word-break:break-word;">${formatKsh(item.landedUnitCost)}</td>
-          <td style="padding:5px;border:1px solid #e2e8f0;word-break:break-word;"><strong>${formatKsh(item.retailResale)}</strong></td>
-          <td style="padding:5px;border:1px solid #e2e8f0;word-break:break-word;">${formatKsh(item.profitPerUnit)}</td>
-          <td style="padding:5px;border:1px solid #e2e8f0;word-break:break-word;">${formatKsh(item.totalProfit)}</td>
-        </tr>
-      `).join("");
+      const rows = calculations.itemBreakdown.map((item, index) => {
+        const dimensions = item.length > 0 && item.width > 0 && item.height > 0
+          ? `${item.length} x ${item.width} x ${item.height} cm`
+          : "-";
+
+        return `
+          <tr>
+            <td class="pdf-td pdf-center">${index + 1}</td>
+            <td class="pdf-td pdf-item"><strong>${escapeHtml(item.name)}</strong><span>Order item</span></td>
+            <td class="pdf-td pdf-center">${item.quantity}</td>
+            <td class="pdf-td">${formatUsd(item.priceUsd)}</td>
+            <td class="pdf-td">${dimensions}</td>
+            <td class="pdf-td pdf-center">${item.cbmPerItem.toFixed(3)}</td>
+            <td class="pdf-td pdf-money">${formatKsh(item.landedUnitCost)}</td>
+            <td class="pdf-td pdf-money pdf-resale">${formatKsh(item.retailResale)}</td>
+            <td class="pdf-td pdf-profit">${formatKsh(item.profitPerUnit)}</td>
+          </tr>
+        `;
+      }).join("");
 
       const doc = document.createElement("div");
-      doc.style.width = "1060px";
-      doc.style.padding = "28px";
+      doc.style.width = "1080px";
+      doc.style.padding = "24px";
       doc.style.boxSizing = "border-box";
-      doc.style.background = "#ffffff";
+      doc.style.background = "#f6f8fc";
       doc.style.color = "#0f172a";
       doc.style.fontFamily = "Arial, sans-serif";
 
       doc.innerHTML = `
-        <div style="display:flex;justify-content:space-between;gap:24px;align-items:flex-start;border-bottom:3px solid #6d28d9;padding-bottom:18px;margin-bottom:22px;">
-          <div>
-            <div style="display:inline-flex;align-items:center;justify-content:center;width:48px;height:48px;border-radius:14px;background:linear-gradient(135deg,#f59e0b,#7c3aed);color:#fff;font-weight:900;letter-spacing:.8px;margin-bottom:10px;">UC</div>
-            <h1 style="font-size:28px;margin:0;color:#07132f;">UniCart Imports KE</h1>
-            <p style="margin:6px 0 0;color:#64748b;font-size:13px;">Import Cost & Resale Pricing Quotation</p>
-          </div>
-          <div style="text-align:right;font-size:12px;color:#475569;line-height:1.8;">
-            <strong style="color:#07132f;font-size:14px;">Quotation</strong><br>
-            No: ${quotationNo}<br>
-            Date: ${dateText}<br>
-            Product: UniCart CargoCalc
-          </div>
-        </div>
+        <style>
+          .pdf-page {
+            background: #f6f8fc;
+            color: #0f172a;
+            font-family: Arial, sans-serif;
+          }
 
-        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px;">
-          <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:12px;">
-            <p style="font-size:11px;color:#64748b;margin:0 0 6px;">Total Order Value</p>
-            <h3 style="font-size:16px;margin:0;color:#07132f;">${formatUsd(calculations.orderValueUsd)}</h3>
+          .pdf-header {
+            background: linear-gradient(135deg, #07132f 0%, #171048 62%, #6d28d9 100%);
+            color: white;
+            border-radius: 18px;
+            padding: 22px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 16px;
+          }
+
+          .pdf-brand {
+            display: flex;
+            gap: 14px;
+            align-items: center;
+          }
+
+          .pdf-logo {
+            width: 54px;
+            height: 54px;
+            border-radius: 16px;
+            background: linear-gradient(135deg, #f59e0b, #7c3aed);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 900;
+            letter-spacing: 1px;
+            font-size: 17px;
+            box-shadow: 0 12px 22px rgba(0,0,0,0.22);
+          }
+
+          .pdf-brand h1 {
+            margin: 0;
+            font-size: 28px;
+            line-height: 1.1;
+            letter-spacing: -0.5px;
+          }
+
+          .pdf-brand p {
+            margin: 7px 0 0;
+            font-size: 12px;
+            color: #dbeafe;
+          }
+
+          .pdf-meta {
+            text-align: right;
+            font-size: 11px;
+            line-height: 1.7;
+            color: #dbeafe;
+          }
+
+          .pdf-meta strong {
+            color: white;
+            display: block;
+            font-size: 16px;
+            margin-bottom: 4px;
+          }
+
+          .pdf-metrics {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-bottom: 14px;
+          }
+
+          .pdf-metric {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 14px;
+            padding: 12px 14px;
+            box-shadow: 0 8px 18px rgba(15, 23, 42, 0.04);
+          }
+
+          .pdf-metric span {
+            display: block;
+            color: #64748b;
+            font-size: 10.5px;
+            margin-bottom: 5px;
+          }
+
+          .pdf-metric strong {
+            display: block;
+            color: #07132f;
+            font-size: 17px;
+          }
+
+          .pdf-grid {
+            display: grid;
+            grid-template-columns: 1.05fr 0.95fr;
+            gap: 12px;
+            margin-bottom: 14px;
+          }
+
+          .pdf-card {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 16px;
+            padding: 14px 16px;
+            box-shadow: 0 8px 18px rgba(15, 23, 42, 0.04);
+          }
+
+          .pdf-card.dark {
+            background: linear-gradient(135deg, #171048, #07132f);
+            border: none;
+            color: white;
+          }
+
+          .pdf-card h2 {
+            margin: 0 0 10px;
+            color: #07132f;
+            font-size: 16px;
+          }
+
+          .pdf-card.dark h2 {
+            color: white;
+          }
+
+          .pdf-line {
+            display: flex;
+            justify-content: space-between;
+            gap: 16px;
+            padding: 7px 0;
+            border-bottom: 1px solid #e2e8f0;
+            font-size: 12.5px;
+          }
+
+          .pdf-line:last-child {
+            border-bottom: none;
+          }
+
+          .pdf-line span {
+            color: #64748b;
+          }
+
+          .pdf-line strong {
+            color: #07132f;
+            text-align: right;
+          }
+
+          .pdf-card.dark .pdf-line {
+            border-color: rgba(255,255,255,0.14);
+          }
+
+          .pdf-card.dark .pdf-line span {
+            color: #cbd5e1;
+          }
+
+          .pdf-card.dark .pdf-line strong {
+            color: white;
+          }
+
+          .pdf-highlight {
+            margin-top: 10px;
+            background: rgba(187,247,208,0.12);
+            border: 1px solid rgba(187,247,208,0.25);
+            border-radius: 12px;
+            padding: 10px 12px;
+          }
+
+          .pdf-highlight small {
+            color: #cbd5e1;
+            display: block;
+            margin-bottom: 4px;
+            font-size: 10.5px;
+          }
+
+          .pdf-highlight strong {
+            color: #bbf7d0;
+            font-size: 22px;
+          }
+
+          .pdf-section-title {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin: 8px 0 8px;
+          }
+
+          .pdf-section-title h2 {
+            margin: 0;
+            font-size: 16px;
+            color: #07132f;
+          }
+
+          .pdf-section-title span {
+            color: #64748b;
+            font-size: 10.5px;
+          }
+
+          .pdf-table {
+            width: 100%;
+            table-layout: fixed;
+            border-collapse: separate;
+            border-spacing: 0;
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 14px;
+            overflow: hidden;
+            font-size: 9.4px;
+            margin-bottom: 12px;
+          }
+
+          .pdf-table thead tr {
+            background: #07132f;
+            color: white;
+          }
+
+          .pdf-table th {
+            padding: 8px 6px;
+            text-align: left;
+            border-right: 1px solid rgba(255,255,255,0.14);
+            font-size: 9px;
+            line-height: 1.2;
+          }
+
+          .pdf-table th:last-child {
+            border-right: none;
+          }
+
+          .pdf-td {
+            padding: 8px 6px;
+            border-top: 1px solid #e2e8f0;
+            border-right: 1px solid #e2e8f0;
+            vertical-align: top;
+            word-break: break-word;
+            line-height: 1.25;
+          }
+
+          .pdf-td:last-child {
+            border-right: none;
+          }
+
+          .pdf-table tbody tr:nth-child(even) {
+            background: #f8fafc;
+          }
+
+          .pdf-center {
+            text-align: center;
+          }
+
+          .pdf-item strong {
+            display: block;
+            color: #07132f;
+            font-size: 9.8px;
+          }
+
+          .pdf-item span {
+            display: block;
+            color: #64748b;
+            font-size: 8px;
+            margin-top: 2px;
+          }
+
+          .pdf-money {
+            font-weight: 700;
+            color: #07132f;
+          }
+
+          .pdf-resale {
+            color: #5b21b6;
+            font-weight: 900;
+          }
+
+          .pdf-profit {
+            color: #16a34a;
+            font-weight: 900;
+          }
+
+          .pdf-support-notes {
+            display: grid;
+            grid-template-columns: 0.85fr 1.15fr;
+            gap: 12px;
+            margin-top: 10px;
+          }
+
+          .pdf-support,
+          .pdf-notes {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 14px;
+            padding: 12px 14px;
+            font-size: 10.5px;
+            line-height: 1.55;
+            color: #475569;
+          }
+
+          .pdf-support strong,
+          .pdf-notes strong {
+            display: block;
+            color: #07132f;
+            font-size: 12px;
+            margin-bottom: 4px;
+          }
+
+          .pdf-footer {
+            margin-top: 10px;
+            text-align: center;
+            font-size: 9.6px;
+            color: #64748b;
+          }
+        </style>
+
+        <div class="pdf-page">
+          <div class="pdf-header">
+            <div class="pdf-brand">
+              <div class="pdf-logo">UC</div>
+              <div>
+                <h1>UniCart Imports KE</h1>
+                <p>Import Cost & Resale Pricing Quotation</p>
+              </div>
+            </div>
+
+            <div class="pdf-meta">
+              <strong>Quotation</strong>
+              No: ${quotationNo}<br>
+              Date: ${dateText}<br>
+              Product: UniCart CargoCalc
+            </div>
           </div>
-          <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:12px;">
-            <p style="font-size:11px;color:#64748b;margin:0 0 6px;">Total CBM</p>
-            <h3 style="font-size:16px;margin:0;color:#07132f;">${calculations.totalCbm.toFixed(3)} CBM</h3>
+
+          <div class="pdf-metrics">
+            <div class="pdf-metric">
+              <span>Total Order Value</span>
+              <strong>${formatUsd(calculations.orderValueUsd)}</strong>
+            </div>
+            <div class="pdf-metric">
+              <span>Total CBM</span>
+              <strong>${calculations.totalCbm.toFixed(3)} CBM</strong>
+            </div>
+            <div class="pdf-metric">
+              <span>Total Quantity</span>
+              <strong>${calculations.totalQuantity} Units</strong>
+            </div>
+            <div class="pdf-metric">
+              <span>USD Rate Used</span>
+              <strong>${calculations.usdRate.toFixed(2)} KSh</strong>
+            </div>
           </div>
-          <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:12px;">
-            <p style="font-size:11px;color:#64748b;margin:0 0 6px;">Total Quantity</p>
-            <h3 style="font-size:16px;margin:0;color:#07132f;">${calculations.totalQuantity} Units</h3>
+
+          <div class="pdf-grid">
+            <div class="pdf-card">
+              <h2>Cost Summary</h2>
+              <div class="pdf-line"><span>Item Value</span><strong>${formatKsh(calculations.itemValueKsh)}</strong></div>
+              <div class="pdf-line"><span>Shipping Fee</span><strong>${formatKsh(calculations.shippingFee)}</strong></div>
+              <div class="pdf-line"><span>Factory/Warehouse Delivery</span><strong>${formatKsh(calculations.warehouseDeliveryFeeKsh)}</strong></div>
+              <div class="pdf-line"><span>Service Fee (${calculations.serviceFee.rateText})</span><strong>${formatKsh(calculations.serviceFee.amount)}</strong></div>
+              <div class="pdf-line"><span>Total Payable</span><strong>${formatKsh(calculations.totalPayable)}</strong></div>
+            </div>
+
+            <div class="pdf-card dark">
+              <h2>Payment & Profit Summary</h2>
+              <div class="pdf-line"><span>Amount Payable Now</span><strong>${formatKsh(calculations.amountPayableNow)}</strong></div>
+              <div class="pdf-line"><span>Expected Profit</span><strong>${formatKsh(calculations.totalExpectedProfit)}</strong></div>
+              <div class="pdf-line"><span>Final Average Unit Cost</span><strong>${formatKsh(calculations.finalUnitPrice)}</strong></div>
+
+              <div class="pdf-highlight">
+                <small>Recommended payment instruction</small>
+                <strong>Pay now excluding shipping</strong>
+              </div>
+            </div>
           </div>
-        </div>
 
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:22px;">
-          <div style="border:1px solid #e2e8f0;border-radius:14px;padding:14px;">
-            <h2 style="font-size:16px;margin:0 0 10px;color:#07132f;">Cost Summary</h2>
-            <div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid #e2e8f0;"><span>Item Value</span><strong>${formatKsh(calculations.itemValueKsh)}</strong></div>
-            <div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid #e2e8f0;"><span>Shipping Fee</span><strong>${formatKsh(calculations.shippingFee)}</strong></div>
-            <div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid #e2e8f0;"><span>Factory/Warehouse Delivery</span><strong>${formatKsh(calculations.warehouseDeliveryFeeKsh)}</strong></div>
-            <div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid #e2e8f0;"><span>Service Fee (${calculations.serviceFee.rateText})</span><strong>${formatKsh(calculations.serviceFee.amount)}</strong></div>
-            <div style="display:flex;justify-content:space-between;padding:10px 0 0;font-size:15px;"><span>Total Payable</span><strong>${formatKsh(calculations.totalPayable)}</strong></div>
+          <div class="pdf-section-title">
+            <h2>Order Item Details</h2>
+            <span>Recommended resale price is calculated from landed unit cost.</span>
           </div>
 
-          <div style="border-radius:14px;padding:14px;background:linear-gradient(135deg,#171048,#07132f);color:white;">
-            <h2 style="font-size:16px;margin:0 0 12px;color:white;">Payment & Profit Summary</h2>
-            <p style="margin:0 0 4px;color:#cbd5e1;font-size:12px;">Amount Payable Now</p>
-            <h3 style="font-size:22px;margin:0 0 12px;color:white;">${formatKsh(calculations.amountPayableNow)}</h3>
-            <p style="margin:0 0 4px;color:#cbd5e1;font-size:12px;">Expected Profit</p>
-            <h3 style="font-size:22px;margin:0;color:#bbf7d0;">${formatKsh(calculations.totalExpectedProfit)}</h3>
-            <p style="margin:12px 0 0;color:#cbd5e1;font-size:11px;line-height:1.5;">Shipping fee is calculated for planning purposes and is paid separately after the goods arrive in Kenya.</p>
+          <table class="pdf-table">
+            <colgroup>
+              <col style="width:4%;">
+              <col style="width:17%;">
+              <col style="width:6%;">
+              <col style="width:10%;">
+              <col style="width:16%;">
+              <col style="width:8%;">
+              <col style="width:13%;">
+              <col style="width:13%;">
+              <col style="width:13%;">
+            </colgroup>
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Item</th>
+                <th>Qty</th>
+                <th>Supplier</th>
+                <th>Dimensions</th>
+                <th>CBM/Unit</th>
+                <th>Landed Cost</th>
+                <th>Recommended Resale</th>
+                <th>Profit/Unit</th>
+              </tr>
+            </thead>
+            <tbody>${rows}</tbody>
+          </table>
+
+          <div class="pdf-support-notes">
+            <div class="pdf-support">
+              <strong>Support & Enquiries</strong>
+              UniCart Imports KE<br>
+              WhatsApp / Calls: +254 728 454 830<br>
+              WhatsApp / Calls: +254 724 063 072<br>
+              Instagram: @unicart_imports
+            </div>
+
+            <div class="pdf-notes">
+              <strong>Important Notes</strong>
+              This quotation is generated by UniCart CargoCalc for planning, pricing, and import cost estimation. Final supplier prices, exchange rates, shipping fees, taxes, and clearance-related charges may vary depending on actual shipment details. Shipping fee is calculated for planning purposes and is paid separately after the goods arrive in Kenya.
+            </div>
           </div>
-        </div>
 
-        <h2 style="font-size:17px;margin:0 0 10px;color:#07132f;">Order Item Details</h2>
-        <table style="width:100%;table-layout:fixed;border-collapse:collapse;font-size:8.6px;margin-bottom:16px;">
-          <thead>
-            <tr style="background:#f8fafc;color:#475569;">
-              <th style="text-align:left;padding:5px;border:1px solid #e2e8f0;word-break:break-word;">#</th>
-              <th style="text-align:left;padding:5px;border:1px solid #e2e8f0;word-break:break-word;">Item</th>
-              <th style="text-align:left;padding:5px;border:1px solid #e2e8f0;word-break:break-word;">Qty</th>
-              <th style="text-align:left;padding:5px;border:1px solid #e2e8f0;word-break:break-word;">Supplier</th>
-              <th style="text-align:left;padding:5px;border:1px solid #e2e8f0;word-break:break-word;">Dimensions</th>
-              <th style="text-align:left;padding:5px;border:1px solid #e2e8f0;word-break:break-word;">CBM/Unit</th>
-              <th style="text-align:left;padding:5px;border:1px solid #e2e8f0;word-break:break-word;">Landed Cost</th>
-              <th style="text-align:left;padding:5px;border:1px solid #e2e8f0;word-break:break-word;">Resale</th>
-              <th style="text-align:left;padding:5px;border:1px solid #e2e8f0;word-break:break-word;">Profit/Unit</th>
-              <th style="text-align:left;padding:5px;border:1px solid #e2e8f0;word-break:break-word;">Total Profit</th>
-            </tr>
-          </thead>
-          <tbody>${rows}</tbody>
-        </table>
-
-
-        <div style="margin:12px 0 14px;padding:12px;border:1px solid #e2e8f0;border-radius:12px;background:#f8fafc;font-size:11px;color:#475569;line-height:1.6;">
-          <strong style="display:block;color:#07132f;font-size:13px;margin-bottom:4px;">Support & Enquiries</strong>
-          UniCart Imports KE<br>
-          WhatsApp / Calls: +254 728 454 830 &nbsp; | &nbsp; +254 724 063 072<br>
-          Instagram: @unicart_imports
-        </div>
-
-        <div style="border-top:1px solid #e2e8f0;padding-top:12px;font-size:11px;color:#64748b;line-height:1.6;">
-          <strong style="color:#07132f;">Notes:</strong><br>
-          This quotation is generated by UniCart CargoCalc for planning, pricing, and import cost estimation. Final supplier prices, exchange rates, shipping fees, taxes, and clearance-related charges may vary depending on actual shipment details.
+          <div class="pdf-footer">
+            Generated by UniCart CargoCalc - UniCart Imports KE
+          </div>
         </div>
       `;
 
       return doc;
     }
+
 
     function downloadOrderPdf() {
       calculateImportCost(false);
